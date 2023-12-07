@@ -3,9 +3,9 @@ import './CircularLoader.css'
 
 
 //adapted from https://uiverse.io/Nawsome/cowardly-squid-50
-function CircularLoader() {
+function CircularLoader({onClick}) {
   return (
-    <div className="svg-frame">
+    <div className="svg-frame" onClick={onClick}>
         <>
 	<svg style={{'--i':0,'--j':0}}>
 		<g id="out1">

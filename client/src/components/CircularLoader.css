@@ -1,7 +1,7 @@
 .svg-frame {
     position: relative;
     width: 500px;
-    height: 850px;
+    height: 600px;
     transform-style: preserve-3d;
     display: flex;
     justify-content: center;

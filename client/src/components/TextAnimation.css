@@ -1,27 +1,37 @@
-.typing__effect {
+/* .typing__effect {
     display: inline-block;
     overflow: hidden;
     /* prevents wrapping to next line */
-    white-space: nowrap; 
+   
+  
+  
+  /* @keyframes typingAnimation {
+    to {
+    
+      opacity: 1;
+    }
+  } */
+  .typing__effect {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
   }
   
   .typing__effect span {
-    font-weight:500;
-    font-size: 80px;
-    height: 20px;
     color:rgb(190, 217, 240);
     display: inline-block;
-    /* initial opacity */
     opacity: 0;
     animation: typingAnimation 1s forwards;
   }
   
   @keyframes typingAnimation {
     to {
-    
       opacity: 1;
     }
   }
+  
+  
+  
   
   
   

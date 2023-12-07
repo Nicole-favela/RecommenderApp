@@ -1,0 +1,51 @@
+.navbar{
+    position: fixed;
+    top: 0;
+    padding: 20 px;
+    width: 100%;
+    height: 30 px;
+    z-index: 1;
+    transition-timing-function: ease-in;
+    transition: all .5s;
+}
+.navbar__contents{
+    position: fixed;
+    top: 10px;
+    left: 0;
+    width: 80px;
+    object-fit: contain;
+    padding-left: 20px;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    /* makes logo move to left and avatar move to right */
+    justify-content: space-between;
+}
+/* .navbar__contents > h2{
+   color: white;
+   left: 0px;
+   height: 30px;
+   align-items:center;
+} */
+.navbar__black{
+    background-color: #111;
+}
+.navbar__logo{
+    position: fixed;
+    top: 10px;
+    left: 0;
+    width: 80px;
+    object-fit: contain;
+    padding-left: 20px;
+    cursor: pointer;
+
+
+}
+.navbar__avatar{
+    padding-top: 20px;
+    cursor: ponter;
+    position: fixed;
+    right: 20px;
+    width: 40px;
+    
+}

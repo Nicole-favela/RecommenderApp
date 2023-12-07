@@ -1,15 +1,14 @@
 import React from 'react'
 import './TextAnimation.css'
 const TextAnimation = () => {
+  const displayText = "Welcome, enter a movie title to begin"
   return (
     <div className='typing__effect'>
-      <span>W</span>
-      <span>e</span>
-      <span>l</span>
-      <span>c</span>
-      <span>o</span>
-      <span>m</span>
-      <span>e</span>
+      {displayText.split('').map((char, i)=>{
+        <span key={i} style= {{animationDelay: `${i * .8}s`}}>
+            {char}
+        </span>
+      })}
      
     </div>
   )

@@ -15,22 +15,22 @@ function App() {
   const [data, setData] = useState([])
 
   //used to test getting data from backend
-  useEffect(()=>{
-    fetch(`${BASE_URL}/testinfo`).then(
-      res => res.json()
-    ).then(
-      data => {
-        setData(data)
-        console.log(data)
-      }
-    )
+  // useEffect(()=>{
+  //   fetch(`${BASE_URL}/testinfo`).then(
+  //     res => res.json()
+  //   ).then(
+  //     data => {
+  //       setData(data)
+  //       console.log(data)
+  //     }
+  //   )
 
-  },[])
+  // },[])
   return (
     <div className="app">
       <Router>
         <Routes>
-          <Route path='/testinfo' element={<Home/>} />
+          <Route path='/' element={<Home/>} />
         </Routes>
 
       </Router>
