@@ -9,6 +9,7 @@ function InputBox() {
     async function handleSubmit(e){
         e.preventDefault() 
         const title = e.currentTarget.title.value
+        console.log('in input box the title is: , ',title)
        
         const res = await fetch(`${BASE_URL}/`, {
             method:"POST", 
@@ -18,6 +19,7 @@ function InputBox() {
              
             }
           }); 
+        console.log('the res is: ', res.body)
         if(res.ok){
             alert('sucessfully submitted movie title')
         }

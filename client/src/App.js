@@ -3,6 +3,7 @@ import './App.css';
 import { useEffect, useState } from 'react';
 import { BASE_URL } from './config/urls';
 import Home from './pages/Home';
+import SignUp from './pages/Signup';
 import {
   BrowserRouter as Router,
   Routes, 
@@ -31,6 +32,7 @@ function App() {
       <Router>
         <Routes>
           <Route path='/' element={<Home/>} />
+          <Route path='/signup' element={<SignUp/>} />
         </Routes>
 
       </Router>
