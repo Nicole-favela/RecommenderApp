@@ -44,7 +44,7 @@ function InputBox() {
 
             
                 <Box sx={{paddingTop: 10}}>
-                    <button type= "submit">generate suggestions</button>
+                    <button className='glitch__btn' type= "submit">generate suggestions</button>
                 </Box>
              </div>
     </form>

@@ -1,0 +1,9 @@
+.home{
+    height: 100vh;
+    color: white;
+    padding: 30px;
+    overflow-y: overlay;
+}
+.home::-webkit-scrollbar{
+    display: none;
+}

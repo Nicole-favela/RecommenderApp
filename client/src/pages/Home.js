@@ -3,7 +3,9 @@ import CircularLoader from '../components/CircularLoader'
 import TextAnimation from '../components/TextAnimation'
 import { useState } from 'react'
 import NavBar from '../components/NavBar'
+
 import InputBox from '../components/InputBox'
+import './Home.css'
 function Home() {
     const [isHoveredOver, setIsHoveredOver] = useState(false)
     const [open, setOpen] = useState(false)
