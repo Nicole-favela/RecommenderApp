@@ -25,6 +25,19 @@ def index():
         return jsonify({"results" :results_based_on_title})
     return {"index route"}
 
+@app.route("/sign_up", methods=['POST'])
+def sign_up():
+    username = request.json["userName"]
+    email = request.json["email"]
+    username = request.json["password"]
+    pass
+    # email_exists = 
+
+    # if email_exists:
+
+
 
 if __name__=="__main__":
     app.run(debug=True)
+
+   

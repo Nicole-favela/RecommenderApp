@@ -6,6 +6,7 @@ import NavBar from '../components/NavBar'
 
 import InputBox from '../components/InputBox'
 import './Home.css'
+import ComboBox from '../components/DropDown'
 function Home() {
     const [isHoveredOver, setIsHoveredOver] = useState(false)
     const [open, setOpen] = useState(false)
@@ -22,8 +23,12 @@ function Home() {
         <CircularLoader
           onClick={()=>showInputBox()}
         />
-        {isHoveredOver && <InputBox/>}
+         <ComboBox/>
+        {/* {isHoveredOver && <InputBox/>} */}
+        {/* {isHoveredOver && <DropDown/>} */}
+      
         </div>
+       
     </div>
   )
 }
