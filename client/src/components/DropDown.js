@@ -11,7 +11,7 @@ const darkTheme = createTheme({
     },
   });
 
-export default function ComboBox() {
+export default function ComboBox({options}) {
   return (
     <ThemeProvider theme={darkTheme}>
         <div className='inputbox__container'>
@@ -19,7 +19,7 @@ export default function ComboBox() {
         <Autocomplete
         disablePortal
         id="combo-box-demo"
-        options={top100Films}
+        options={options}
         sx={{ width: 400, height: 50 }}
         renderInput={(params) => <TextField {...params} label="Movie" color='primary' />}
         />
@@ -33,6 +33,8 @@ export default function ComboBox() {
 }
 
 // Top 100 films as rated by IMDb users. http://www.imdb.com/chart/top
+
+//test data
 const top100Films = [
   { label: 'The Shawshank Redemption', year: 1994 },
   { label: 'The Godfather', year: 1972 },
