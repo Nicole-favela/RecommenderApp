@@ -5,6 +5,12 @@ client/node_modules
 /.pnp
 .pnp.js
 
+#large files 
+server/pickle_files/similarities.pkl
+server/pickle_files/simplified_movies_data.pkl
+.pkl
+
+
 
 # Environments
 .env

@@ -1,10 +1,11 @@
 import * as React from 'react';
-
+import { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import './DropDown.css'
+import { BASE_URL } from '../config/urls';
 const darkTheme = createTheme({
     palette: {
       mode: 'dark',
@@ -12,19 +13,41 @@ const darkTheme = createTheme({
   });
 
 export default function ComboBox({options}) {
-  return (
+   const [form, setForm] = useState({})
+   async function handleSubmit(e){
+        e.preventDefault() //prevent default submission of form
+        console.log('the title selected from dropdown is: ', form)
+        const res = await fetch(`${BASE_URL}/`, {
+            method:"POST", 
+            body: JSON.stringify(form),
+            headers:{
+              'content-type': "application/json", 
+             
+            }
+          }); 
+  
+      }
+   return (
     <ThemeProvider theme={darkTheme}>
         <div className='inputbox__container'>
+        <Box component='form' onSubmit={handleSubmit} sx={{paddingTop: 10}}>
             
         <Autocomplete
-        disablePortal
-        id="combo-box-demo"
-        options={options}
-        sx={{ width: 400, height: 50 }}
-        renderInput={(params) => <TextField {...params} label="Movie" color='primary' />}
+            disablePortal
+            id="combo-box-demo"
+            name='title'
+            type='text'
+            options={options}
+            sx={{ width: 400, height: 50 }}
+            onChange={(e, newValue) => {
+                setForm({...form,  title: newValue});
+            }}
+            renderInput={(params) =>
+                <TextField {...params} label="Movie" color='primary' 
+            />}
         />
 
-        <Box sx={{paddingTop: 10}}>
+       
             <button className='glitch__btn' type= "submit">generate suggestions</button>
         </Box>
         </div>

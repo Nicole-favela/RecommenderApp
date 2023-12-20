@@ -20,15 +20,22 @@ def get_movie_options():
     except Exception as e:
         return jsonify({'error': str(e)})
     
-#TODO: return results based on title
-def get_title(title):
+#TODO: finish function and return list of recommendations
+def get_recommendations(title):
+    # index_of_movie = content_tags[content_tags['title'] == movies].index[0]
+    # similar_to = sorted(list(enumerate(sim[index_of_movie])),reverse=True, key=lambda vector: vector[1]) #sorted tuple list of index, similarity score
+    # recommendations = []
+    # for s in similar_to[:10]: #iterate first 10 entries
+    #     print(content_tags.iloc[s[0]].title) #print the title at location s[0]- index in tuple list
     return title
+
 @app.route("/", methods = ['GET','POST'])
 def index():
     if request.method =='POST':
 
-        title = request.form.get('title')
-        results_based_on_title = get_title(title)
+        title = request.json['title']['label']
+        print('INPOST REQUEST, TITLE IS: ',title)
+        results_based_on_title = get_recommendations(title)
         return jsonify({"results" :results_based_on_title})
     else:
         movie_options = get_movie_options()
