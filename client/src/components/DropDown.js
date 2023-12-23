@@ -6,14 +6,16 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import './DropDown.css'
 import { BASE_URL } from '../config/urls';
+import {useNavigate} from 'react-router-dom'
 const darkTheme = createTheme({
     palette: {
       mode: 'dark',
     },
   });
 
-export default function ComboBox({options}) {
+export default function ComboBox({options, setMovieRecs}) {
    const [form, setForm] = useState({})
+   const navigate = useNavigate()
    async function handleSubmit(e){
         e.preventDefault() //prevent default submission of form
         console.log('the title selected from dropdown is: ', form)
@@ -25,6 +27,11 @@ export default function ComboBox({options}) {
              
             }
           }); 
+        const data = await res.json(); //get recommendations array back
+        console.log('in the dropdown the res is: ',data)
+        if (res.ok){
+            setMovieRecs(data?.recommendations)
+        }
   
       }
    return (

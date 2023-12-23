@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import NavBar from '../components/NavBar'
 import { BASE_URL } from '../config/urls'
 
+
 import InputBox from '../components/InputBox'
 import './Home.css'
 import ComboBox from '../components/DropDown'
@@ -12,7 +13,10 @@ function Home() {
     const [isHoveredOver, setIsHoveredOver] = useState(false)
     const [open, setOpen] = useState(false)
     const [options, setOptions] = useState({})
+    const [showResults, setShowResults] = useState(false)
+    const [movieRecs, setMovieRecs] = useState([])
     const showInputBox = ()=> setOpen(true)
+    
     useEffect(() => {
         const fetchTitles = async () => {
           try {
@@ -29,29 +33,68 @@ function Home() {
     
         fetchTitles();
       }, []);
+      const renderHome = () => {
+       
+          return (
+            <div className='home'>
+            <NavBar/>
+            {isHoveredOver && <TextAnimation />}
+            <div
+                onMouseEnter={() => setIsHoveredOver(true)}
+                onMouseLeave={() => setIsHoveredOver(false)}
+            
+            >
+
+                <CircularLoader
+                onClick={()=>showInputBox()}
+                />
+
+                {/* only show if no results */}
+                <ComboBox options={options.movies} setShowResults={setShowResults} setMovieRecs={setMovieRecs}/>
+
+                <p>{}</p>
+                </div>
+            
+            </div>
+          );
+        
+      };
+      const renderResults=()=>{
+        return(
+            <div className='home'>
+            <NavBar/>
+           {isHoveredOver && <TextAnimation />}
+           <div
+            onMouseEnter={() => setIsHoveredOver(true)}
+            onMouseLeave={() => setIsHoveredOver(false)}
+         
+           >
+            <CircularLoader
+              onClick={()=>showInputBox()}
+            />
+             {/* <ComboBox options={options.movies}/> */}
+         
+            {/* TODO: add results list here */}
+            <p>Recommendations: </p>
+            <br/>
+          
+            <p>{movieRecs[0]}</p>
+            <p>{movieRecs[1]}</p>
+            <p>{movieRecs[2]}</p>
+            <p>{movieRecs[3]}</p>
+            <p>{movieRecs[4]}</p>
+          
+            </div>
+           
+        </div>
+        )
+      }
     
   return (
-    <div className='home'>
-        <NavBar/>
-       {isHoveredOver && <TextAnimation />}
-       <div
-        onMouseEnter={() => setIsHoveredOver(true)}
-        onMouseLeave={() => setIsHoveredOver(false)}
-     
-       >
-        <CircularLoader
-          onClick={()=>showInputBox()}
-        />
-         <ComboBox options={options.movies}/>
-        {/* {isHoveredOver && <InputBox/>} */}
-        {/* {isHoveredOver && <DropDown/>} */}
-        {/* for testing */}
-        {/* {options.titles.slice(0,20).map((t, index)=> (<p>{t}</p>))} */}
-        {/* TODO: add results list here */}
-      
-        </div>
-       
-    </div>
+    <>
+    {movieRecs.length == 0 ? renderHome(): renderResults()}
+    </>
+   
   )
 }
 

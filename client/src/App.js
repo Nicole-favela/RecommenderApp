@@ -5,6 +5,7 @@ import { BASE_URL } from './config/urls';
 import Home from './pages/Home';
 import SignUp from './pages/Signup';
 import Login from './pages/Login';
+
 import {
   BrowserRouter as Router,
   Routes, 
