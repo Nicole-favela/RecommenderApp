@@ -3,6 +3,7 @@ import CircularLoader from '../components/CircularLoader'
 import TextAnimation from '../components/TextAnimation'
 import { useState, useEffect } from 'react'
 import NavBar from '../components/NavBar'
+import axios from 'axios'
 import { BASE_URL } from '../config/urls'
 
 
@@ -15,6 +16,7 @@ function Home() {
     const [options, setOptions] = useState({})
     const [showResults, setShowResults] = useState(false)
     const [movieRecs, setMovieRecs] = useState([])
+    const [movieId, setMovieId] = useState([])
     const showInputBox = ()=> setOpen(true)
     
     useEffect(() => {
@@ -50,7 +52,7 @@ function Home() {
                 />
 
                 {/* only show if no results */}
-                <ComboBox options={options.movies} setShowResults={setShowResults} setMovieRecs={setMovieRecs}/>
+                <ComboBox options={options.movies}  setMovieRecs={setMovieRecs} setMovieId={setMovieId}/>
 
                 <p>{}</p>
                 </div>
@@ -60,6 +62,7 @@ function Home() {
         
       };
       const renderResults=()=>{
+       
         return(
             <div className='home'>
             <NavBar/>
@@ -72,18 +75,19 @@ function Home() {
             <CircularLoader
               onClick={()=>showInputBox()}
             />
-             {/* <ComboBox options={options.movies}/> */}
+           
          
             {/* TODO: add results list here */}
             <p>Recommendations: </p>
             <br/>
           
-            <p>{movieRecs[0]}</p>
-            <p>{movieRecs[1]}</p>
-            <p>{movieRecs[2]}</p>
-            <p>{movieRecs[3]}</p>
-            <p>{movieRecs[4]}</p>
-          
+           {movieRecs && movieRecs?.map((recommendations, i)=>(
+            <div key={recommendations.id}>
+                <h2>{recommendations.title}</h2>
+                
+            </div>
+           ))}
+        
             </div>
            
         </div>
@@ -92,7 +96,7 @@ function Home() {
     
   return (
     <>
-    {movieRecs.length == 0 ? renderHome(): renderResults()}
+    {movieRecs.length === 0 ? renderHome(): renderResults()}
     </>
    
   )
