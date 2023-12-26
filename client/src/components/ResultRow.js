@@ -1,38 +1,41 @@
 import React, { useEffect, useState } from 'react'
+import { POSTER_URL } from '../config/urls';
+import './ResultRow.css'
 
 
 
-
-export default function ResultRow({title}) {
+export default function ResultRow({title, recommendations}) {
 
   //for modal:
   const [open, setOpen] = React.useState(false);
  
  
-  const handleOpen = (i)=>{
+//   const handleOpen = (i)=>{
 
-    setOpen(true)
+//     setOpen(true)
    
-    setMovieIndex(i)
+//     setMovieIndex(i)
     
   
-  }
-  const handleClose = () => {
-    setOpen(false);
+//   }
+//   const handleClose = () => {
+//     setOpen(false);
     
-  }
+//   }
 
   return (
     <div className='result'>
         
         <h2>{title}</h2>
         <div className='result__posters'>
-        <BasicModal open={open} handleClose={handleClose} fetchUserList={fetchUserList} fetchPlayedList={fetchPlayedList}/>
+        {/* <BasicModal open={open} handleClose={handleClose} fetchUserList={fetchUserList} fetchPlayedList={fetchPlayedList}/> */}
        
 
-        {movies.map((movie,index)=>
-            ((movie.backdrop_path || movie.poster) && (
-            <img className= 'result__poster'  onClick={()=>handleOpen(index, movie)} key = {movie.id} src={`${imgUrl}${movie.backdrop_path}`} alt = {movie.name}/>
+        {recommendations.map((movie,index)=>
+            ((movie.poster_path) && (
+            
+            <img className= 'result__poster'  key = {movie.id} src={`${POSTER_URL}${movie.poster_path}`} alt = {movie.title}/>
+            
             )
         ))}
         </div>

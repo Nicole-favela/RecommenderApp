@@ -10,6 +10,7 @@ import { BASE_URL } from '../config/urls'
 import InputBox from '../components/InputBox'
 import './Home.css'
 import ComboBox from '../components/DropDown'
+import ResultRow from '../components/ResultRow'
 function Home() {
     const [isHoveredOver, setIsHoveredOver] = useState(false)
     const [open, setOpen] = useState(false)
@@ -76,17 +77,16 @@ function Home() {
               onClick={()=>showInputBox()}
             />
            
-         
-            {/* TODO: add results list here */}
-            <p>Recommendations: </p>
             <br/>
           
-           {movieRecs && movieRecs?.map((recommendations, i)=>(
+           {/* {movieRecs && movieRecs?.map((recommendations, i)=>(
             <div key={recommendations.id}>
                 <h2>{recommendations.title}</h2>
                 
             </div>
-           ))}
+           ))} */}
+
+           <ResultRow title ={"Your Recommendations:"} recommendations={movieRecs}/>
         
             </div>
            
