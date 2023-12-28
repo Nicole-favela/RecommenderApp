@@ -44,16 +44,23 @@ def index():
         title = request.json['title']['label']
         recs, rec_ids = recommendations(title, content_tags, similarities)
         posters =[]
+        overviews=[]
+        release_dates=[]
         for id in rec_ids:
             posters.append(get_poster(int(id)))
+            overviews.append(get_overview(int(id)))
+            release_dates.append(get_date(int(id)))
+       
         print('recommendations, IN INDEX are: ',recs)
         movie_recommendations = [
             {
                 "title": title,
                 "id": id,
-                "poster_path": poster_path
+                "poster_path": poster_path,
+                "overview": overview,
+                "date": date,
             }
-            for title, id, poster_path in zip(recs, rec_ids, posters)
+            for title, id, poster_path, overview, date in zip(recs, rec_ids, posters, overviews, release_dates)
         ]
         print('structured RECS: ', movie_recommendations)
         #return jsonify({'recommendations': recs, 'ids': rec_ids})
@@ -81,6 +88,30 @@ def get_poster(id):
     print('the poster path is: ',poster_path)
     #return jsonify({'url': poster_path})
     return poster_path
+def get_overview(id):
+    API_KEY=os.getenv('API_KEY')
+    if API_KEY is None:
+        return jsonify({'error': 'api key is not set'}),500
+    URL=f'https://api.themoviedb.org/3/movie/{id}?api_key={API_KEY}'
+    response = requests.get(URL)
+    data = response.json()
+
+    overview = data['overview']
+    print('the movie overview is: ',overview)
+    return overview
+def get_date(id):
+    API_KEY=os.getenv('API_KEY')
+    if API_KEY is None:
+        return jsonify({'error': 'api key is not set'}),500
+    URL=f'https://api.themoviedb.org/3/movie/{id}?api_key={API_KEY}'
+    response = requests.get(URL)
+    data = response.json()
+
+    date = data['release_date']
+    print('the movie release date is:  ',date)
+    return date
+
+
 
 
 @app.route("/sign_up", methods=['POST'])
