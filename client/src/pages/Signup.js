@@ -13,6 +13,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Logo from '../components/Logo';
+import { useState } from 'react';
+import { BASE_URL } from '../config/urls';
 
 
 const darkTheme = createTheme({
@@ -21,18 +23,38 @@ const darkTheme = createTheme({
     },
   });
 
-
-
-
-
 export default function SignUp() {
-  const handleSubmit = (event) => {
+  const [form, setForm] = useState({})
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [userName, setUserName] = useState('');
+  async function handleSubmit(event) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    const form = {
+        email,
+        password,
+        userName,
+      }
+    try{
+        console.log(form)
+        const res = await fetch(`${BASE_URL}/sign_up`, {
+            method:"POST", 
+            body: JSON.stringify(form),
+            headers:{
+            'content-type': "application/json", 
+            
+            }
+        }); 
+        const data = await res.json(); 
+        
+        if (res.ok){
+            
+            console.log('successfullly submitted form')
+            
+        }
+    }catch(err){
+        console.log('error registering user')
+    }
   };
 
   return (
@@ -58,18 +80,9 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box component="form" noValidate sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                {/* <TextField
-                  autoComplete="given-name"
-                  name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                  autoFocus
-                /> */}
               </Grid>
               <Grid item xs={12} >
                 <TextField
@@ -78,6 +91,8 @@ export default function SignUp() {
                   id="userName"
                   label="Username"
                   name="userName"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
                   autoComplete="user-name"
                 />
               </Grid>
@@ -89,6 +104,8 @@ export default function SignUp() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -100,6 +117,8 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -114,6 +133,7 @@ export default function SignUp() {
               fullWidth
               variant="contained"
               sx={{ mt: 2, mb: 1 }}
+              onClick={handleSubmit}
             >
               Sign Up
             </Button>

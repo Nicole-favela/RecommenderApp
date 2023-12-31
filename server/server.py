@@ -3,12 +3,24 @@ from flask_cors import CORS
 import pickle
 import pandas as pd
 import os
+
+
 import pip._vendor.requests 
+from flask_sqlalchemy import SQLAlchemy
 import requests
+from models import db, User
 from dotenv import load_dotenv
+from flask_bcrypt import Bcrypt 
+
+
+
+db = SQLAlchemy()
 load_dotenv()
 
 app = Flask(__name__)
+bcrypt = Bcrypt(app) 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db.init_app(app)
 CORS(app)
 
 def get_movie_options():
@@ -116,13 +128,16 @@ def get_date(id):
 
 @app.route("/sign_up", methods=['POST'])
 def sign_up():
-    username = request.json["userName"]
-    email = request.json["email"]
-    username = request.json["password"]
-    pass
-    # email_exists = 
+    if request.method == 'POST':
+        username = request.json["userName"]
+        email = request.json["email"]
+        password = request.json["password"]
+       
+        print('the username is: ', username, 'the email is: ', email)
+        return jsonify({'success': 'info received'})
+        # email_exists = 
 
-    # if email_exists:
+        # if email_exists:
 
 
 

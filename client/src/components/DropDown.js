@@ -18,6 +18,7 @@ export default function ComboBox({options, setMovieRecs, setMovieId}) {
    const navigate = useNavigate()
    async function handleSubmit(e){
         e.preventDefault() //prevent default submission of form
+        
         console.log('the title selected from dropdown is: ', form)
         const res = await fetch(`${BASE_URL}/`, {
             method:"POST", 
