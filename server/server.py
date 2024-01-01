@@ -3,18 +3,17 @@ from flask_cors import CORS
 import pickle
 import pandas as pd
 import os
+from os import path
 
 
 import pip._vendor.requests 
 from flask_sqlalchemy import SQLAlchemy
 import requests
-from models import db, User
+from models import db, User, create_database
 from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt 
 
 
-
-db = SQLAlchemy()
 load_dotenv()
 
 app = Flask(__name__)
@@ -22,6 +21,9 @@ bcrypt = Bcrypt(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db.init_app(app)
 CORS(app)
+
+with app.app_context():
+    create_database()
 
 def get_movie_options():
     try:
@@ -34,7 +36,6 @@ def get_movie_options():
     except Exception as e:
         return jsonify({'error': str(e)})
     
-#TODO: finish function and return movie id as well
 
 def recommendations(title, content_tags, sim):
     index_of_movie = content_tags[content_tags['title'] == title].index[0]
@@ -124,8 +125,6 @@ def get_date(id):
     return date
 
 
-
-
 @app.route("/sign_up", methods=['POST'])
 def sign_up():
     if request.method == 'POST':
@@ -133,8 +132,24 @@ def sign_up():
         email = request.json["email"]
         password = request.json["password"]
        
-        print('the username is: ', username, 'the email is: ', email)
-        return jsonify({'success': 'info received'})
+        userExists = User.query.filter_by(email = email).first() 
+        if userExists:
+            return jsonify({'error':'that email is associated with an existing account'})
+        else:
+            if len(email)<4:
+                return jsonify({'error': 'please enter a longer email'})
+            if len(password)<6:
+                return jsonify({'error': 'passwords must be more than 6 characters in length'})
+            hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+            try:
+                new_user= User(username = username, email= email,  password = hashed_password)
+                db.session.add(new_user)
+                db.session.commit()
+                return jsonify({'message': 'your account was created successfully!'}), 200
+            except:
+                return jsonify({'error': 'db error creating new user'})
+
+            
         # email_exists = 
 
         # if email_exists:
@@ -142,6 +157,7 @@ def sign_up():
 
 
 if __name__=="__main__":
+    
     app.run(debug=True)
 
    

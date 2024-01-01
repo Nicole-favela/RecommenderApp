@@ -15,6 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Logo from '../components/Logo';
 import { useState } from 'react';
 import { BASE_URL } from '../config/urls';
+import { useNavigate } from 'react-router-dom';
 
 
 const darkTheme = createTheme({
@@ -28,8 +29,11 @@ export default function SignUp() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [userName, setUserName] = useState('');
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
   async function handleSubmit(event) {
     event.preventDefault();
+    
     const form = {
         email,
         password,
@@ -50,10 +54,15 @@ export default function SignUp() {
         if (res.ok){
             
             console.log('successfullly submitted form')
+            setMessage('Account created successfully')
+            navigate("/")// go to home page
             
         }
+        else{
+          setMessage(data.error)
+        }
     }catch(err){
-        console.log('error registering user')
+        console.log('error registering user', err)
     }
   };
 
@@ -137,6 +146,7 @@ export default function SignUp() {
             >
               Sign Up
             </Button>
+            {message && <p>{message}</p>}
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link href="#" variant="body2">
