@@ -60,9 +60,11 @@ export default function SignUp() {
         }
         else{
           setMessage(data.error)
+          navigate("/signup")
         }
     }catch(err){
         console.log('error registering user', err)
+        navigate("/signup")
     }
   };
 
@@ -149,7 +151,7 @@ export default function SignUp() {
             {message && <p>{message}</p>}
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/login" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>

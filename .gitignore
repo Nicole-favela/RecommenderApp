@@ -44,3 +44,6 @@ yarn-error.log*
 #database local environment
 instance/
 *.db
+
+#config script
+server/config

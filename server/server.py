@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_cors import CORS
 import pickle
 import pandas as pd
 import os
 from os import path
+from config.generate_key import JWT_SECRET_KEY
 
 
 import pip._vendor.requests 
@@ -19,6 +21,8 @@ load_dotenv()
 app = Flask(__name__)
 bcrypt = Bcrypt(app) 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
+jwt = JWTManager(app)
 db.init_app(app)
 CORS(app)
 
@@ -134,12 +138,12 @@ def sign_up():
        
         userExists = User.query.filter_by(email = email).first() 
         if userExists:
-            return jsonify({'error':'that email is associated with an existing account'})
+            return jsonify({'error':'that email is associated with an existing account'}), 409
         else:
             if len(email)<4:
-                return jsonify({'error': 'please enter a longer email'})
+                return jsonify({'error': 'please enter a longer email'}), 400
             if len(password)<6:
-                return jsonify({'error': 'passwords must be more than 6 characters in length'})
+                return jsonify({'error': 'passwords must be more than 6 characters in length'}), 400
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
             try:
                 new_user= User(username = username, email= email,  password = hashed_password)
@@ -147,14 +151,28 @@ def sign_up():
                 db.session.commit()
                 return jsonify({'message': 'your account was created successfully!'}), 200
             except:
-                return jsonify({'error': 'db error creating new user'})
+                return jsonify({'error': 'db error creating new user'}), 500
 
-            
-        # email_exists = 
+@app.route("/login", methods=['POST'])
+def login():
+    if request.method == 'POST':
+        
+        email = request.json["email"]
+        password = request.json["password"]
+        print('in login email: ', email, ' and pass: ', password)
+        #check if email exists in system
+        user = User.query.filter_by(email = email).first() 
+       
+        if not user:
+            return jsonify({'error':'email is incorrect, please try again'}), 401
+        #check if user and pw exists in system and is valid by hashing pw and comparing it
+        if not bcrypt.check_password_hash(user.password, password):
+            return jsonify({'error':'incorrect password, please try again'}), 401
 
-        # if email_exists:
-
-
+        #else log user in by sending an access token
+    
+        access_token = create_access_token(identity=user.id)
+        return jsonify(access_token=access_token), 200
 
 if __name__=="__main__":
     
