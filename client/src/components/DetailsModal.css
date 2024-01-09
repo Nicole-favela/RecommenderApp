@@ -3,6 +3,7 @@
     font-weight: 1500;
     text-shadow: #000;
     padding-bottom: .3rem;
+    color:#fff;
 
 }
 .banner__description{
@@ -12,10 +13,15 @@
     font-size:  0.8rem;
     max-width: 350px;
     height: 60px;
+    color:#fff;
 
+}
+.banner__details{
+    color:#fff;
 }
 .detailedview__title{
     padding-top: 6rem;
+   
 
 }
 .detailedview__button{

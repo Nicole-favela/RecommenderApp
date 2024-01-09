@@ -3,6 +3,7 @@ import './Login.css'
 import { BASE_URL } from '../config/urls'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie'
 //adapted from https://uiverse.io/Praashoo7/
 const Login = () => {
   const [form, setForm] = useState({})
@@ -32,6 +33,7 @@ const Login = () => {
     
       alert('successfullly submitted form to log in')
       setMessage('successfully logged in. access token is: ', data.access_token)
+      Cookies.set("token", data.access_token);
       navigate("/")// go to home page
       
     }

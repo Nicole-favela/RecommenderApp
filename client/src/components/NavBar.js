@@ -1,6 +1,8 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import './NavBar.css'
+import LogoutButton from './LogoutButton'
+
 
 function NavBar() {
     const [show, handleShow] = useState(false)
@@ -28,7 +30,7 @@ function NavBar() {
           {/* <img className="navbar__logo"src={project_name} alt="logo" /> */}
             {/* TODO: add chip icon for profile w/ logout option */}
          {/* <img className="nav__avatar" src={user_icon} alt="user-avatar" /> */}
-
+          <LogoutButton/>
 
 
 

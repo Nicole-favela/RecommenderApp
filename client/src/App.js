@@ -5,6 +5,7 @@ import { BASE_URL } from './config/urls';
 import Home from './pages/Home';
 import SignUp from './pages/Signup';
 import Login from './pages/Login';
+import { PrivateRoute } from './utils/PrivateRoute';
 
 import {
   BrowserRouter as Router,
@@ -17,23 +18,16 @@ import {
 function App() {
   const [data, setData] = useState([])
 
-  //used to test getting data from backend
-  // useEffect(()=>{
-  //   fetch(`${BASE_URL}/testinfo`).then(
-  //     res => res.json()
-  //   ).then(
-  //     data => {
-  //       setData(data)
-  //       console.log(data)
-  //     }
-  //   )
-
-  // },[])
+ 
   return (
     <div className="app">
       <Router>
         <Routes>
-          <Route path='/' element={<Home/>} />
+          <Route path='/' element={
+            <PrivateRoute>
+                <Home/>
+            </PrivateRoute>
+          } />
           <Route path='/signup' element={<SignUp/>} />
           <Route path='/login' element={<Login/>} />
         </Routes>
