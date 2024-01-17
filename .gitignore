@@ -44,6 +44,7 @@ yarn-error.log*
 #database local environment
 instance/
 *.db
+migrations/
 
 #config script
 server/config

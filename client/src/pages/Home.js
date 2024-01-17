@@ -11,6 +11,7 @@ import InputBox from '../components/InputBox'
 import './Home.css'
 import ComboBox from '../components/DropDown'
 import ResultRow from '../components/ResultRow'
+import Cookies from 'js-cookie'
 function Home() {
     const [isHoveredOver, setIsHoveredOver] = useState(false)
     const [open, setOpen] = useState(false)
@@ -18,12 +19,18 @@ function Home() {
     const [showResults, setShowResults] = useState(false)
     const [movieRecs, setMovieRecs] = useState([])
     const [movieId, setMovieId] = useState([])
+    const token = Cookies.get('token')
     const showInputBox = ()=> setOpen(true)
     
     useEffect(() => {
         const fetchTitles = async () => {
           try {
-            const res = await fetch(`${BASE_URL}/`);
+           
+            const res = await fetch(`${BASE_URL}/`, {
+              headers:{
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+          }})
             const data = await res.json();
             setOptions(data);
             console.log(data)

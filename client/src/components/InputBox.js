@@ -3,11 +3,13 @@ import { useState } from 'react'
 import Box from '@mui/material/Box';
 import { BASE_URL } from '../config/urls';
 import './InputBox.css'
+import Cookies from 'js-cookie'
 
 function InputBox() {
    
     async function handleSubmit(e){
         e.preventDefault() 
+        const token = Cookies.get('token')
         const title = e.currentTarget.title.value
         console.log('in input box the title is: , ',title)
        
@@ -16,7 +18,7 @@ function InputBox() {
             body: JSON.stringify({title}),
             headers:{
               'content-type': "application/json", 
-             
+              Authorization: `Bearer ${token}`,
             }
           }); 
         console.log('the res is: ', res.body)

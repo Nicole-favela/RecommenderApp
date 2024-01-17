@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import './DropDown.css'
 import { BASE_URL } from '../config/urls';
 import {useNavigate} from 'react-router-dom'
+import Cookies from 'js-cookie'
 const darkTheme = createTheme({
     palette: {
       mode: 'dark',
@@ -18,13 +19,14 @@ export default function ComboBox({options, setMovieRecs, setMovieId}) {
    const navigate = useNavigate()
    async function handleSubmit(e){
         e.preventDefault() //prevent default submission of form
-        
+        const token = Cookies.get('token')
         console.log('the title selected from dropdown is: ', form)
         const res = await fetch(`${BASE_URL}/`, {
             method:"POST", 
             body: JSON.stringify(form),
             headers:{
               'content-type': "application/json", 
+              Authorization: `Bearer ${token}`,
              
             }
           }); 

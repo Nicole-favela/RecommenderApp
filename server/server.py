@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 from flask_cors import CORS
+from flask_migrate import Migrate
 import pickle
 import pandas as pd
 import os
@@ -11,7 +12,7 @@ from config.generate_key import JWT_SECRET_KEY
 import pip._vendor.requests 
 from flask_sqlalchemy import SQLAlchemy
 import requests
-from models import db, User, create_database
+from models import db, User, Movie
 from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt 
 
@@ -24,16 +25,52 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
 jwt = JWTManager(app)
 db.init_app(app)
+migrate = Migrate(app, db) #to keep track of changes to schemas
 CORS(app)
 
-with app.app_context():
-    create_database()
+# with app.app_context():
+#     create_database()
+
+@app.route("/add_to_list", methods=['POST'])
+@jwt_required()
+def add_to_list():
+   
+    try:
+       
+        print("Request JSON:", request.json)
+        user_id = get_jwt_identity()
+        print(f"Current User ID: {user_id}")
+
+
+        movie_id = request.json["movie_id"]
+        title = request.json["title"]
+        overview = request.json["overview"]
+        poster = request.json["poster"]
+        user_id = request.json["user_id"]
+        date = request.json["date"]
+        print("the movie data is as follows: ...")
+        print(title)
+        print("...")
+        print("date is: ",date)
+        print(overview)
+
+        new_movie = Movie( movie_id =movie_id,title=title,overview=overview, poster= poster,  user_id = user_id, date=date) #creates movie
+        db.session.add(new_movie)
+        db.session.commit()
+            
+        #user.add_movie_to_list(movie_details['id'], movie_details['title'], movie_details['poster_path'])
+
+        return jsonify({'message': 'Movie added'}),200
+    except Exception as e:
+        return jsonify({'error': str(e)}),500
+        
+
 
 def get_movie_options():
     try:
         movies = pickle.load(open('./pickle_files/simplified_movies_data.pkl', 'rb'))
         titles = movies['title'].tolist()
-        print("first 5 titles are: ", titles[:5])
+        # print("first 5 titles are: ", titles[:5])
         # return jsonify({"titles": titles}) #returns {titles: Array(10000)}
         return jsonify({'movies': [{'label': title} for title in titles[:]]}) # returns movies: Array(10000) as movies{label: 'moviename'}
 
@@ -50,10 +87,11 @@ def recommendations(title, content_tags, sim):
         #print(content_tags.iloc[s[0]].title) #print the title at location s[0]- index in tuple list
         recommendations.append(content_tags.iloc[s[0]].title)
         rec_ids.append(str(content_tags.iloc[s[0]].id))
-    print('recommendations, recs are: ',recommendations, 'with ids: ', rec_ids)
+    #print('recommendations, recs are: ',recommendations, 'with ids: ', rec_ids)
     return recommendations, rec_ids
 
 @app.route("/", methods = ['GET','POST'])
+@jwt_required()
 def index():
     content_tags = pickle.load(open('./pickle_files/simplified_movies_data.pkl', 'rb'))
     similarities = pickle.load(open('./pickle_files/similarities.pkl', 'rb'))
@@ -68,7 +106,7 @@ def index():
             overviews.append(get_overview(int(id)))
             release_dates.append(get_date(int(id)))
        
-        print('recommendations, IN INDEX are: ',recs)
+        #print('recommendations, IN INDEX are: ',recs)
         movie_recommendations = [
             {
                 "title": title,
@@ -79,7 +117,7 @@ def index():
             }
             for title, id, poster_path, overview, date in zip(recs, rec_ids, posters, overviews, release_dates)
         ]
-        print('structured RECS: ', movie_recommendations)
+        #print('structured RECS: ', movie_recommendations)
         #return jsonify({'recommendations': recs, 'ids': rec_ids})
         return jsonify({'recomendations': movie_recommendations})
        
@@ -102,7 +140,7 @@ def get_poster(id):
 
     # print('the data in poster id response is: ', response.text)
     poster_path = data['backdrop_path']
-    print('the poster path is: ',poster_path)
+    #print('the poster path is: ',poster_path)
     #return jsonify({'url': poster_path})
     return poster_path
 def get_overview(id):
@@ -114,7 +152,7 @@ def get_overview(id):
     data = response.json()
 
     overview = data['overview']
-    print('the movie overview is: ',overview)
+    #print('the movie overview is: ',overview)
     return overview
 def get_date(id):
     API_KEY=os.getenv('API_KEY')
@@ -125,7 +163,7 @@ def get_date(id):
     data = response.json()
 
     date = data['release_date']
-    print('the movie release date is:  ',date)
+    #print('the movie release date is:  ',date)
     return date
 
 
@@ -159,7 +197,7 @@ def login():
         
         email = request.json["email"]
         password = request.json["password"]
-        print('in login email: ', email, ' and pass: ', password)
+        #print('in login email: ', email, ' and pass: ', password)
         #check if email exists in system
         user = User.query.filter_by(email = email).first() 
        
