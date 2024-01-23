@@ -5,7 +5,7 @@ import DetailsModal from './DetailsModal';
 
 
 
-export default function ResultRow({title, recommendations}) {
+export default function ResultRow({title, movies}) {
 
   //for modal:
   const [open, setOpen] = React.useState(false);
@@ -28,10 +28,10 @@ export default function ResultRow({title, recommendations}) {
         <h2>{title}</h2>
         <div className='result__posters'>
        
-       <DetailsModal open={open} handleClose={handleClose} movie={recommendations[index]}/>
+       <DetailsModal open={open} handleClose={handleClose} movie={movies[index]}/>
 
-        {recommendations.map((movie,index)=>
-            ((movie.poster_path) && (
+        {movies.map((movie,index)=>
+            ((movie.poster_path ) && (
             
             <img className= 'result__poster' onClick={()=>handleOpen(movie, index)} key = {movie.id} src={`${POSTER_URL}${movie.poster_path}`} alt = {movie.title}/>
             

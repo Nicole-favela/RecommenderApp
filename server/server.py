@@ -34,34 +34,55 @@ CORS(app)
 @app.route("/add_to_list", methods=['POST'])
 @jwt_required()
 def add_to_list():
-   
     try:
-       
-        print("Request JSON:", request.json)
+    
         user_id = get_jwt_identity()
-        print(f"Current User ID: {user_id}")
-
-
         movie_id = request.json["movie_id"]
         title = request.json["title"]
         overview = request.json["overview"]
         poster = request.json["poster"]
         user_id = request.json["user_id"]
         date = request.json["date"]
-        print("the movie data is as follows: ...")
-        print(title)
-        print("...")
-        print("date is: ",date)
-        print(overview)
+      
 
         new_movie = Movie( movie_id =movie_id,title=title,overview=overview, poster= poster,  user_id = user_id, date=date) #creates movie
         db.session.add(new_movie)
         db.session.commit()
-            
-        #user.add_movie_to_list(movie_details['id'], movie_details['title'], movie_details['poster_path'])
 
         return jsonify({'message': 'Movie added'}),200
     except Exception as e:
+        return jsonify({'error': str(e)}),500
+        
+@app.route("/usermovies_list", methods=['GET'])
+@jwt_required()
+def get_user_list():
+   
+    try:
+       
+        print("Request JSON:", request)
+        user_id = get_jwt_identity()
+        print(f"Current User ID in get_user_list: {user_id}")
+       
+        user_movies = Movie.query.filter_by(user_id=user_id).all()
+        print("*********************************************** ")
+      
+         # Convert the list of Movie objects to a list of dictionaries
+        movies = [
+            {
+                'id': movie.id,
+                'movie_id': movie.movie_id,
+                'title': movie.title,
+                'overview': movie.overview,
+                'poster_path': movie.poster,
+                'user_id': movie.user_id,
+                'date': movie.date
+            }
+            for movie in user_movies
+        ]
+
+        return jsonify({'movies_list': movies}),200
+    except Exception as e:
+        print(f"Error fetching user movies: {e}")
         return jsonify({'error': str(e)}),500
         
 
