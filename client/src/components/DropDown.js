@@ -35,6 +35,7 @@ export default function ComboBox({options, setMovieRecs, setMovieId}) {
         if (res.ok){
             
             setMovieRecs(data.recomendations)
+            console.log('the recommendations are: ', data.recomendations)
             
         }
   

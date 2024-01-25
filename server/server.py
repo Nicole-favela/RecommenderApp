@@ -11,6 +11,7 @@ from config.generate_key import JWT_SECRET_KEY
 
 import pip._vendor.requests 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import distinct
 import requests
 from models import db, User, Movie
 from dotenv import load_dotenv
@@ -62,8 +63,14 @@ def get_user_list():
         print("Request JSON:", request)
         user_id = get_jwt_identity()
         print(f"Current User ID in get_user_list: {user_id}")
-       
-        user_movies = Movie.query.filter_by(user_id=user_id).all()
+        user_movies = (
+            db.session.query(Movie)
+            .filter_by(user_id=user_id)
+            .group_by(Movie.movie_id) #groups by specific col
+            .all()
+        )
+
+      
         print("*********************************************** ")
       
          # Convert the list of Movie objects to a list of dictionaries
@@ -91,9 +98,14 @@ def get_movie_options():
     try:
         movies = pickle.load(open('./pickle_files/simplified_movies_data.pkl', 'rb'))
         titles = movies['title'].tolist()
-        # print("first 5 titles are: ", titles[:5])
-        # return jsonify({"titles": titles}) #returns {titles: Array(10000)}
-        return jsonify({'movies': [{'label': title} for title in titles[:]]}) # returns movies: Array(10000) as movies{label: 'moviename'}
+        unique_titles = set()
+        for title in titles:
+        # Check if the movie title is already in the set
+            if title not in unique_titles:
+                unique_titles.add(title)
+               
+       
+        return jsonify({'movies': [{'label': title} for title in list(unique_titles)[:]]}) # returns movies: Array(10000) as movies{label: 'moviename'}
 
     except Exception as e:
         return jsonify({'error': str(e)})
@@ -119,34 +131,30 @@ def index():
     if request.method =='POST': #add title user selected
         title = request.json['title']['label']
         recs, rec_ids = recommendations(title, content_tags, similarities)
-        posters =[]
-        overviews=[]
-        release_dates=[]
-        for id in rec_ids:
-            posters.append(get_poster(int(id)))
-            overviews.append(get_overview(int(id)))
-            release_dates.append(get_date(int(id)))
+      
+      
+        unique_movies = set()
+        movie_recommendations=[]
        
-        #print('recommendations, IN INDEX are: ',recs)
-        movie_recommendations = [
-            {
-                "title": title,
-                "id": id,
-                "poster_path": poster_path,
-                "overview": overview,
-                "date": date,
-            }
-            for title, id, poster_path, overview, date in zip(recs, rec_ids, posters, overviews, release_dates)
-        ]
-        #print('structured RECS: ', movie_recommendations)
-        #return jsonify({'recommendations': recs, 'ids': rec_ids})
+        for movie, id in zip(recs, rec_ids):
+        # Check if the movie_id is already in the set
+            if id not in unique_movies:
+                unique_movies.add(id)
+                movie_recommendations.append({
+                    "title": movie,
+                    "id": id,
+                    "poster_path": get_poster(int(id)),
+                    "overview": get_overview(int(id)),
+                    "date": get_date(int(id)),
+                })
+       
         return jsonify({'recomendations': movie_recommendations})
        
     else:# get movie options for user to choose from
         movie_options = get_movie_options()
         return movie_options
   
-#@app.route("/movie_poster/<int:id>", methods=['GET'])
+
 def get_poster(id):
     #use movie_id to build url
     API_KEY=os.getenv('API_KEY')
@@ -154,15 +162,10 @@ def get_poster(id):
         return jsonify({'error': 'api key is not set'}),500
     URL=f'https://api.themoviedb.org/3/movie/{id}?api_key={API_KEY}'
    
-    
-
     response = requests.get(URL)
     data = response.json()
-
-    # print('the data in poster id response is: ', response.text)
     poster_path = data['backdrop_path']
-    #print('the poster path is: ',poster_path)
-    #return jsonify({'url': poster_path})
+  
     return poster_path
 def get_overview(id):
     API_KEY=os.getenv('API_KEY')
@@ -173,7 +176,7 @@ def get_overview(id):
     data = response.json()
 
     overview = data['overview']
-    #print('the movie overview is: ',overview)
+   
     return overview
 def get_date(id):
     API_KEY=os.getenv('API_KEY')
@@ -184,7 +187,7 @@ def get_date(id):
     data = response.json()
 
     date = data['release_date']
-    #print('the movie release date is:  ',date)
+  
     return date
 
 

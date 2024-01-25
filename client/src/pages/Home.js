@@ -7,6 +7,7 @@ import axios from 'axios'
 import { BASE_URL } from '../config/urls'
 import useFetch from '../hooks/useFetch'
 import  Button from '../components/Button'
+import { useNavigate } from 'react-router-dom';
 
 import InputBox from '../components/InputBox'
 import './Home.css'
@@ -25,6 +26,8 @@ function Home() {
     const showInputBox = ()=> setOpen(true)
     const USER_MOVIE_URL = `${BASE_URL}/usermovies_list`
     const {data: userMoviesData ,loading: userMoviesLoading ,error: userMoviesError} = useFetch(USER_MOVIE_URL, token)
+    const navigate = useNavigate()
+
     
     useEffect(() => {
         const fetchTitles = async () => {
@@ -35,7 +38,13 @@ function Home() {
                 'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`,
           }})
+            if(res.status === 401){
+              alert('Your session has expired, please login')
+              navigate("/login")
+
+            }
             const data = await res.json();
+           
             setOptions(data);
             console.log(data)
           } catch (error) {
@@ -48,7 +57,7 @@ function Home() {
         fetchTitles();
       }, []);
    
-     
+    
     
   return (
     <div className='home'>
