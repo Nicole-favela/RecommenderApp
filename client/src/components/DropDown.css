@@ -1,5 +1,10 @@
 /* button adapted from uiverse.io */
+.glitch__btn{
+  top: 40px;
+  left: 100px;
+}
 button,button::after {
+   
     padding: 10px 50px;
     font-size: 20px;
     border: none;
@@ -18,7 +23,7 @@ button,button::after {
     --move5: inset(45% 0 6% 0);
     --move6: inset(14% 0 61% 0);
     clip-path: var(--move1);
-    content: 'GLITCH';
+    content: 'GENERATE';
     position: absolute;
     top: 0;
     left: 0;

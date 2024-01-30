@@ -67,7 +67,7 @@ export default function ComboBox({options, setMovieRecs, setMovieId}) {
         />
 
        
-            <button className='glitch__btn' type= "submit">generate suggestions</button>
+            <button className='glitch__btn' type= "submit">Generate</button>
         </Box>
         </div>
     </ThemeProvider>

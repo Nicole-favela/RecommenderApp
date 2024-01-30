@@ -1,51 +1,44 @@
-.navbar{
+
+.navbar {
     position: fixed;
     top: 0;
-    padding: 20 px;
+    left: 0;
     width: 100%;
-    height: 30 px;
+    height: 30px;
     z-index: 1;
+   
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px; 
     transition-timing-function: ease-in;
     transition: all .5s;
-}
-.navbar__contents{
-    position: fixed;
-    top: 10px;
-    left: 0;
-    width: 80px;
-    object-fit: contain;
-    padding-left: 20px;
+  }
+  
+  .navbar__contents {
+    display: flex;
+    align-items: center;
     cursor: pointer;
     color: white;
-    display: flex;
-    /* makes logo move to left and avatar move to right */
-    justify-content: space-between;
-}
-/* .navbar__contents > h2{
-   color: white;
-   left: 0px;
-   height: 30px;
-   align-items:center;
-} */
-.navbar__black{
+  }
+  .navbar__black {
     background-color: #111;
-}
-.navbar__logo{
-    position: fixed;
-    top: 10px;
-    left: 0;
-    width: 80px;
-    object-fit: contain;
-    padding-left: 20px;
+  }
+  
+  .navbar__contents h2 {
+    color: white;
+    margin: 0;
+    padding-right: 20px; 
+  }
+  
+  .logout {
+    padding-top: 6px;
+    padding-left: 20px; 
     cursor: pointer;
-
-
-}
-.navbar__avatar{
-    padding-top: 20px;
-    cursor: ponter;
-    position: fixed;
-    right: 20px;
-    width: 40px;
-    
-}
+    position: absolute;
+    top: 0;
+    /* keeps button fixed to the right */
+    right: 50px; 
+  }
+  
+  
