@@ -29,22 +29,23 @@ function DetailsModal({open, handleClose, movie}) {
   function truncateDescription(string, cutoffChar){
       return string?.length > cutoffChar ? string.substr(0, cutoffChar -1) + '...' : string;
    }
-  function formatCredits(credits){
+  function formatCrew(credits){
       
     if(!credits || credits === undefined ){
       return ''
     }
-    if (credits.length === 3){   
-          const castNames = credits?.cast?.map((actor)=> actor.name)
-          return castNames?.join(', ')
-    }
-    if (credits.lenght ===5 ){
-        const filteredTitles = credits?.crew?.filter(res=> res.job === 'Executive Producer' || res.job === 'Director')
-        const names = filteredTitles?.map((producer)=> producer.name)
-        
-        return names?.join(', ')
+    const names = credits?.map((crew)=> crew.name)
+    return names?.join(', ')
 
+  }
+  function formatCast(credits){
+    console.log('the cast is: ', credits)
+    if(!credits || credits === undefined ){
+        return ''
     }
+    const castNames = credits?.map((actor)=> actor.name)
+    return castNames?.join(', ')
+
   }
    
    async function addMovie(movie){
@@ -69,7 +70,7 @@ function DetailsModal({open, handleClose, movie}) {
     
 
     }
-    console.log('Movie to be added after restructure: ', movie_data);
+   
     const res = await fetch(`${BASE_URL}/add_to_list`, {
         method:"POST", 
         body: JSON.stringify(movie_data),
@@ -78,7 +79,7 @@ function DetailsModal({open, handleClose, movie}) {
           Authorization: `Bearer ${token}`,
         }
       });
-      console.log('res from add to list is: ', res)
+    
       if (!res.ok){
         const errorData = await res.json();
         console.error('Error:', errorData);
@@ -139,9 +140,10 @@ function DetailsModal({open, handleClose, movie}) {
             
                 
                 <div className="detailedview__credits">
-                Cast: {formatCredits(movie?.cast)}
-                <br/>
-                Creators: {formatCredits(movie?.crew)}
+                    Cast: {formatCast(movie?.cast)}
+                    <br/>
+                    <br/>
+                    Creators: {formatCrew(movie?.crew)}
                 </div>
           
           
