@@ -13,8 +13,18 @@ export default function useFetch(url, token){
                     setLoading(true)
                     const headers = {'Authorization': `Bearer ${token}`}
                     const response = await axios.get(url, {headers})
-                    console.log('in usefetch hook, response is: ', response)
-                    setData(response.data.movies_list)
+
+                    //parse the cast and crew data
+                    const parsedData = response.data.movies_list.map((movie) => ({
+                        ...movie,
+                        crew: JSON.parse(movie.crew),
+                        cast: JSON.parse(movie.cast),
+                        }));
+                       
+                   
+                    console.log('in usefetch hook, response is: ', parsedData)
+                  
+                    setData(parsedData)
                 }catch(err){
                     setError(err)
                 }finally{

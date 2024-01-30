@@ -7,8 +7,6 @@ import pandas as pd
 import os
 from os import path
 from config.generate_key import JWT_SECRET_KEY
-
-
 import pip._vendor.requests 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import distinct
@@ -16,7 +14,7 @@ import requests
 from models import db, User, Movie
 from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt 
-
+import json
 
 load_dotenv()
 
@@ -36,22 +34,22 @@ CORS(app)
 @jwt_required()
 def add_to_list():
     try:
-    
         user_id = get_jwt_identity()
         movie_id = request.json["movie_id"]
         title = request.json["title"]
         overview = request.json["overview"]
         poster = request.json["poster"]
-        user_id = request.json["user_id"]
         date = request.json["date"]
-      
-
-        new_movie = Movie( movie_id =movie_id,title=title,overview=overview, poster= poster,  user_id = user_id, date=date) #creates movie
+        cast = request.json["cast"]
+        crew = request.json["crew"]
+    
+        new_movie = Movie( movie_id =movie_id,title=title,overview=overview, poster= poster,  user_id = user_id, date=date, cast =json.dumps(cast), crew =json.dumps(crew)) #creates movie
         db.session.add(new_movie)
         db.session.commit()
 
         return jsonify({'message': 'Movie added'}),200
     except Exception as e:
+        print(f"Error adding user movies: {e}")
         return jsonify({'error': str(e)}),500
         
 @app.route("/usermovies_list", methods=['GET'])
@@ -59,10 +57,7 @@ def add_to_list():
 def get_user_list():
    
     try:
-       
-        print("Request JSON:", request)
         user_id = get_jwt_identity()
-        print(f"Current User ID in get_user_list: {user_id}")
         user_movies = (
             db.session.query(Movie)
             .filter_by(user_id=user_id)
@@ -70,9 +65,9 @@ def get_user_list():
             .all()
         )
 
-      
-        print("*********************************************** ")
-      
+        if user_movies is None:
+            return jsonify({'message': 'user has no movies yet'}),404
+        
          # Convert the list of Movie objects to a list of dictionaries
         movies = [
             {
@@ -82,11 +77,13 @@ def get_user_list():
                 'overview': movie.overview,
                 'poster_path': movie.poster,
                 'user_id': movie.user_id,
-                'date': movie.date
+                'date': movie.date,
+                'cast': movie.cast,
+                'crew': movie.crew
             }
             for movie in user_movies
         ]
-
+       # print(f"Current movies in get_user_list: {movies}")
         return jsonify({'movies_list': movies}),200
     except Exception as e:
         print(f"Error fetching user movies: {e}")
@@ -131,11 +128,9 @@ def index():
     if request.method =='POST': #add title user selected
         title = request.json['title']['label']
         recs, rec_ids = recommendations(title, content_tags, similarities)
-      
-      
         unique_movies = set()
         movie_recommendations=[]
-       
+     
         for movie, id in zip(recs, rec_ids):
         # Check if the movie_id is already in the set
             if id not in unique_movies:
@@ -146,8 +141,11 @@ def index():
                     "poster_path": get_poster(int(id)),
                     "overview": get_overview(int(id)),
                     "date": get_date(int(id)),
+                    "cast": json.dumps(get_movie_cast(int(id))), #converts to JSON
+                    "crew": json.dumps(get_movie_crew(int(id)))
                 })
-       
+        
+        print(f"The recommendations are: {movie_recommendations}")
         return jsonify({'recomendations': movie_recommendations})
        
     else:# get movie options for user to choose from
@@ -167,6 +165,28 @@ def get_poster(id):
     poster_path = data['backdrop_path']
   
     return poster_path
+def get_movie_cast(id):
+    #use movie_id to build url
+    API_KEY=os.getenv('API_KEY')
+    if API_KEY is None:
+        return jsonify({'error': 'api key is not set'}),500
+    URL=f'https://api.themoviedb.org/3/movie/{id}/credits?api_key={API_KEY}'
+   
+    response = requests.get(URL)
+    data = response.json()
+    cast = data['cast']
+    return cast[:5]
+def get_movie_crew(id):
+    #use movie_id to build url
+    API_KEY=os.getenv('API_KEY')
+    if API_KEY is None:
+        return jsonify({'error': 'api key is not set'}),500
+    URL=f'https://api.themoviedb.org/3/movie/{id}/credits?api_key={API_KEY}'
+   
+    response = requests.get(URL)
+    data = response.json()
+    crew = data['crew']
+    return crew[:5]
 def get_overview(id):
     API_KEY=os.getenv('API_KEY')
     if API_KEY is None:
@@ -174,9 +194,7 @@ def get_overview(id):
     URL=f'https://api.themoviedb.org/3/movie/{id}?api_key={API_KEY}'
     response = requests.get(URL)
     data = response.json()
-
     overview = data['overview']
-   
     return overview
 def get_date(id):
     API_KEY=os.getenv('API_KEY')

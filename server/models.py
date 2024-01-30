@@ -2,6 +2,7 @@
 from flask_sqlalchemy import SQLAlchemy
 #from sqlalchemy import Integer, String
 import datetime
+from sqlalchemy.dialects.postgresql import JSON
 #from sqlalchemy.orm import Mapped, mapped_column
 from uuid import uuid4
 
@@ -30,4 +31,6 @@ class Movie(db.Model):
     poster = db.Column(db.String(1000))
     user_id= db.Column(db.Integer,db.ForeignKey('user.id')) #one to many relationship
     date = db.Column(db.String(80))
+    cast = db.Column(JSON)
+    crew = db.Column(JSON)
    

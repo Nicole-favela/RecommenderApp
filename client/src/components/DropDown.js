@@ -20,7 +20,7 @@ export default function ComboBox({options, setMovieRecs, setMovieId}) {
    async function handleSubmit(e){
         e.preventDefault() //prevent default submission of form
         const token = Cookies.get('token')
-        console.log('the title selected from dropdown is: ', form)
+       
         const res = await fetch(`${BASE_URL}/`, {
             method:"POST", 
             body: JSON.stringify(form),
@@ -31,12 +31,18 @@ export default function ComboBox({options, setMovieRecs, setMovieId}) {
             }
           }); 
         const data = await res.json(); //get recommendations array back
-        
+        if(!res.ok){
+          console.log('error in dropdown when submitting movie selection: ', res)
+        }
         if (res.ok){
-            
-            setMovieRecs(data.recomendations)
-            console.log('the recommendations are: ', data.recomendations)
-            
+          
+            const parsedRecommendations = data.recomendations.map((recommendation) => ({
+            ...recommendation,
+            crew: JSON.parse(recommendation.crew),
+            cast: JSON.parse(recommendation.cast),
+            }));
+            setMovieRecs(parsedRecommendations)
+            console.log('the recommendations are: ',parsedRecommendations)
         }
   
       }

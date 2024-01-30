@@ -29,6 +29,24 @@ function DetailsModal({open, handleClose, movie}) {
   function truncateDescription(string, cutoffChar){
       return string?.length > cutoffChar ? string.substr(0, cutoffChar -1) + '...' : string;
    }
+  function formatCredits(credits){
+      
+    if(!credits || credits === undefined ){
+      return ''
+    }
+    if (credits.length === 3){   
+          const castNames = credits?.cast?.map((actor)=> actor.name)
+          return castNames?.join(', ')
+    }
+    if (credits.lenght ===5 ){
+        const filteredTitles = credits?.crew?.filter(res=> res.job === 'Executive Producer' || res.job === 'Director')
+        const names = filteredTitles?.map((producer)=> producer.name)
+        
+        return names?.join(', ')
+
+    }
+  }
+   
    async function addMovie(movie){
     const token = Cookies.get('token')
     const decoded = jwtDecode(token)
@@ -37,13 +55,7 @@ function DetailsModal({open, handleClose, movie}) {
     console.log('user is is: ', user_id);
     console.log('Movie to be added: ', movie);
 
-    //from db
-    // movie_id = request.json["movie_id"]
-    // title = request.json["title"]
-    // overview = request.json["overview"]
-    // poster = request.json["poster"]
-    // user_id = request.json["id"]
-    //date
+
     const movie_data = {
       
         movie_id: movie.id,
@@ -52,9 +64,12 @@ function DetailsModal({open, handleClose, movie}) {
         user_id:  user_id,
         date: movie.date,
         poster: movie?.poster_path,
+        cast: movie.cast ?? [], 
+        crew: movie.crew ?? [], 
     
 
     }
+    console.log('Movie to be added after restructure: ', movie_data);
     const res = await fetch(`${BASE_URL}/add_to_list`, {
         method:"POST", 
         body: JSON.stringify(movie_data),
@@ -121,19 +136,14 @@ function DetailsModal({open, handleClose, movie}) {
 
             {/* credits: */}
             
-                {creditsLoading ? (
-                // show a loading indicator while data is being fetched
-                <div className="detailedview__loading">
-                Loading credits...
-                </div>
-            ) : (
-                // render credits when available
+            
+                
                 <div className="detailedview__credits">
-                Cast: 
+                Cast: {formatCredits(movie?.cast)}
                 <br/>
-                Creators: 
+                Creators: {formatCredits(movie?.crew)}
                 </div>
-            )}
+          
           
 
                 {/* TODO: more related movies options */}

@@ -40,6 +40,7 @@ function Home() {
           }})
             if(res.status === 401){
               alert('Your session has expired, please login')
+              Cookies.remove('token')
               navigate("/login")
 
             }
