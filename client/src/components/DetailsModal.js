@@ -39,13 +39,17 @@ function DetailsModal({open, handleClose, movie}) {
 
   }
   function formatCast(credits){
-    console.log('the cast is: ', credits)
+    //console.log('the cast is: ', credits)
     if(!credits || credits === undefined ){
         return ''
     }
     const castNames = credits?.map((actor)=> actor.name)
     return castNames?.join(', ')
 
+  }
+  function isOnList(movie){
+    //if movie has user_id field -> display 'remove' else display ' + mylist ;
+    return (movie !== undefined && 'user_id' in movie) ? true : false
   }
    
    async function addMovie(movie){
@@ -122,7 +126,7 @@ function DetailsModal({open, handleClose, movie}) {
             <div className='banner__buttons'>
                
                
-            {on_my_list ===true ? (
+            {isOnList(movie) ? (
                    <button className='detailedview__button' >
                    Remove
                     </button>
