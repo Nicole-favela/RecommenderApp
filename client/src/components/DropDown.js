@@ -41,11 +41,13 @@ export default function ComboBox({options, setMovieRecs, setMovieId}) {
             crew: JSON.parse(recommendation.crew),
             cast: JSON.parse(recommendation.cast),
             }));
+            
             setMovieRecs(parsedRecommendations)
             console.log('the recommendations are: ',parsedRecommendations)
         }
   
       }
+      
    return (
     <ThemeProvider theme={darkTheme}>
         <div className='inputbox__container'>

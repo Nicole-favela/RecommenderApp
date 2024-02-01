@@ -113,7 +113,7 @@ function DetailsModal({open, handleClose, movie}) {
             {new Date(movie?.date).getFullYear() }
                 <h2 className='banner__description'>
                 
-                    {truncateDescription(movie?.overview, 200)}
+                    {truncateDescription(movie?.overview, 400)}
 
                 </h2>
 

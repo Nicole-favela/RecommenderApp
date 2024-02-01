@@ -45,9 +45,13 @@ function Home() {
 
             }
             const data = await res.json();
+            //sort data alphabetically
+            const sortedOptions =  {movies: data.movies.sort((a, b) =>
+              a.label.localeCompare(b.label))};
+            
            
-            setOptions(data);
-            console.log(data)
+            setOptions(sortedOptions);
+          
           } catch (error) {
             console.error('Error fetching titles:', error);
           }finally{

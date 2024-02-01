@@ -18,6 +18,8 @@
 }
 .banner__details{
     color:#fff;
+    padding-top: 50px;
+    
 }
 .detailedview__title{
     padding-top: 6rem;
@@ -38,7 +40,7 @@
     padding-top: .5rem;
     background-color: rgba(65, 63, 63, 0.5);
     padding-bottom: .5rem;
-    border-style:groove;
+    
    
 
 
@@ -90,18 +92,22 @@
 }
 .detailedview__credits{
     width: 45rem;
-    line-height: 1.0;
-    padding-top: 1rem;
+    line-height: 1.5;
+    padding-top: 10rem;
     font-size:  0.8rem;
     max-width: 350px; 
     height: 10px;
-    padding-left: 220px;
+    padding-left: 20px;
     font-weight:550;
-    padding-right: 10px;
+    padding-right: 5px;
 
    
     color:#fff;
 
+}
+.banner__buttons{
+    padding-top: 70px;
+    padding-left: 30px;
 }
     
 
