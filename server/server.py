@@ -29,6 +29,21 @@ CORS(app)
 
 # with app.app_context():
 #     create_database()
+@app.route("/delete_movie/<id>", methods=["DELETE"])
+@jwt_required()
+def delete_movie(id):
+    try:
+        movie= Movie.query.get(id)
+        if movie:
+            db.session.delete(movie)
+            db.session.commit()
+
+            return jsonify({'message': 'Movie deleted'}), 200
+        else:
+            return jsonify({'error': 'Movie not found'}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route("/add_to_list", methods=['POST'])
 @jwt_required()

@@ -51,6 +51,24 @@ function DetailsModal({open, handleClose, movie}) {
     //if movie has user_id field -> display 'remove' else display ' + mylist ;
     return (movie !== undefined && 'user_id' in movie) ? true : false
   }
+  async function deleteMovie(id){ 
+    const token = Cookies.get('token')
+    const res = await fetch(`${BASE_URL}/delete_movie/${id}`, {
+        method:"DELETE", 
+        headers:{
+          'content-type': "application/json", //makes sure json format is sent to backend
+          Authorization: `Bearer ${token}`,
+        }
+      });
+    
+      if (!res.ok){
+        const errorData = await res.json();
+        console.error('Error:', errorData);
+      }
+
+   
+
+  }
    
    async function addMovie(movie){
     const token = Cookies.get('token')
@@ -127,7 +145,7 @@ function DetailsModal({open, handleClose, movie}) {
                
                
             {isOnList(movie) ? (
-                   <button className='detailedview__button' >
+                   <button className='detailedview__button' onClick={()=>deleteMovie(movie?.id)} >
                    Remove
                     </button>
                 
