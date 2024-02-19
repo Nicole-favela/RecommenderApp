@@ -7,7 +7,8 @@ import './DetailsModal.css'
 import Cookies from 'js-cookie';
 import { BASE_URL } from '../config/urls';
 import {jwtDecode} from 'jwt-decode'
-
+   
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 
 const style = {
     position: 'absolute',
@@ -26,6 +27,7 @@ function DetailsModal({open, handleClose, movie}) {
   const moviePoster = `url("https://image.tmdb.org/t/p/original/${movie?.poster_path}")`
   const [on_my_list, set_on_my_list]= useState(false)//temp state, replace with db value
   const [creditsLoading, creditsSetLoading]= useState(false)
+  const [like, setLike] = useState(false)
   function truncateDescription(string, cutoffChar){
       return string?.length > cutoffChar ? string.substr(0, cutoffChar -1) + '...' : string;
    }
@@ -98,7 +100,7 @@ function DetailsModal({open, handleClose, movie}) {
         body: JSON.stringify(movie_data),
         headers:{
           'content-type': "application/json", //makes sure json format is sent to backend
-          Authorization: `Bearer ${token}`,
+           Authorization: `Bearer ${token}`,
         }
       });
     
@@ -145,7 +147,7 @@ function DetailsModal({open, handleClose, movie}) {
                
                
             {isOnList(movie) ? (
-                   <button className='detailedview__button' onClick={()=>deleteMovie(movie?.id)} >
+                <button className='detailedview__button' onClick={()=>deleteMovie(movie?.id)} >
                    Remove
                     </button>
                 
@@ -154,8 +156,16 @@ function DetailsModal({open, handleClose, movie}) {
                 + My List
                  </button>
                 }
+                  <ThumbUpIcon
+                    color="inherit" 
+                    sx={{marginLeft: '4px'}}
+                    onClick={()=>setLike(true)}
+                />
+               
+                 
             
             </div>
+           
 
             {/* credits: */}
             

@@ -15,6 +15,9 @@ from models import db, User, Movie
 from dotenv import load_dotenv
 from flask_bcrypt import Bcrypt 
 import json
+import boto3
+from botocore.exceptions import ConnectionError
+
 
 load_dotenv()
 
@@ -29,6 +32,7 @@ CORS(app)
 
 # with app.app_context():
 #     create_database()
+
 @app.route("/delete_movie/<id>", methods=["DELETE"])
 @jwt_required()
 def delete_movie(id):
@@ -106,9 +110,9 @@ def get_user_list():
         
 
 
-def get_movie_options():
+def get_movie_options(movies):
     try:
-        movies = pickle.load(open('./pickle_files/simplified_movies_data.pkl', 'rb'))
+        #movies = pickle.load(open('./pickle_files/simplified_movies_data.pkl', 'rb'))
         titles = movies['title'].tolist()
         unique_titles = set()
         for title in titles:
@@ -133,13 +137,40 @@ def recommendations(title, content_tags, sim):
         recommendations.append(content_tags.iloc[s[0]].title)
         rec_ids.append(str(content_tags.iloc[s[0]].id))
     #print('recommendations, recs are: ',recommendations, 'with ids: ', rec_ids)
+   
     return recommendations, rec_ids
 
 @app.route("/", methods = ['GET','POST'])
 @jwt_required()
 def index():
-    content_tags = pickle.load(open('./pickle_files/simplified_movies_data.pkl', 'rb'))
-    similarities = pickle.load(open('./pickle_files/similarities.pkl', 'rb'))
+    config_env_path = os.path.join(os.path.dirname(__file__), '..', 'config', '.env')
+    load_dotenv(dotenv_path=config_env_path)
+    
+   
+    s3= boto3.client('s3')
+    max_retries = 3
+    retry_count = 0
+    
+    AWS_BUCKET_NAME=os.getenv('AWS_BUCKET_NAME')
+    while retry_count < max_retries:
+        try:
+        
+            response1 = s3.get_object(Bucket=AWS_BUCKET_NAME, Key='similarities.pkl')
+            response2 = s3.get_object(Bucket=AWS_BUCKET_NAME, Key='simplified_movies_data.pkl')
+            similarities = pickle.loads(response1['Body'].read())
+            content_tags = pickle.loads(response2['Body'].read())
+            print('fetched data, response1 is: ', response1)
+            print('fetched data, response2 is: ', response2)
+            break #success- break out of loop
+        except:
+            retry_count+=1
+           
+            if retry_count == max_retries:
+                print('Max retries exceeded. Failed to retrieve objects from s3')
+                
+
+    # content_tags = pickle.load(open('./pickle_files/simplified_movies_data.pkl', 'rb'))
+    # similarities = pickle.load(open('./pickle_files/similarities.pkl', 'rb'))
     if request.method =='POST': #add title user selected
         title = request.json['title']['label']
         recs, rec_ids = recommendations(title, content_tags, similarities)
@@ -160,11 +191,12 @@ def index():
                     "crew": json.dumps(get_movie_crew(int(id)))
                 })
         
-        print(f"The recommendations are: {movie_recommendations}")
+        #print(f"The recommendations are: {movie_recommendations}")
         return jsonify({'recomendations': movie_recommendations})
        
     else:# get movie options for user to choose from
-        movie_options = get_movie_options()
+       
+        movie_options = get_movie_options(content_tags)
         return movie_options
   
 

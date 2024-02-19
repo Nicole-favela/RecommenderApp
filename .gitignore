@@ -16,6 +16,8 @@ server/pickle_files/simplified_movies_data.pkl
 
 # Environments
 .env
+config/.env
+
 .venv
 env/
 venv/
