@@ -3,6 +3,12 @@
     color: white;
     padding: 30px;
     overflow-y: overlay;
+    
+}
+.home__initial__state{
+    position: relative;
+    height: 100%;
+
 }
 .home::-webkit-scrollbar{
     display: none;

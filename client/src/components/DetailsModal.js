@@ -76,7 +76,7 @@ function DetailsModal({open, handleClose, movie}) {
     const token = Cookies.get('token')
     const decoded = jwtDecode(token)
     const user_id = decoded.sub
-    console.log('Token:', token);
+    
     console.log('user is is: ', user_id);
     console.log('Movie to be added: ', movie);
 

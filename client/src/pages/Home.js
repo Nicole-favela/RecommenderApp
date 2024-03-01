@@ -8,6 +8,7 @@ import { BASE_URL } from '../config/urls'
 import useFetch from '../hooks/useFetch'
 import  Button from '../components/Button'
 import { useNavigate } from 'react-router-dom';
+import MainLoader from '../components/MainLoader'
 
 import InputBox from '../components/InputBox'
 import './Home.css'
@@ -18,6 +19,7 @@ function Home() {
     const [isHoveredOver, setIsHoveredOver] = useState(false)
     const [open, setOpen] = useState(false)
     const [options, setOptions] = useState({})
+    const [loadingOptions, setIsLoadingOptions]= useState(false)
     const [showResults, setShowResults] = useState(false)
     const [movieRecs, setMovieRecs] = useState([])
     const [movieId, setMovieId] = useState([])
@@ -32,7 +34,7 @@ function Home() {
     useEffect(() => {
         const fetchTitles = async () => {
           try {
-           
+            setIsLoadingOptions(true)
             const res = await fetch(`${BASE_URL}/`, {
               headers:{
                 'Content-Type': 'application/json',
@@ -56,6 +58,7 @@ function Home() {
             console.error('Error fetching titles:', error);
           }finally{
             console.log('the options are: ', options)
+            setIsLoadingOptions(false)
           }
         };
     
@@ -65,32 +68,36 @@ function Home() {
     
     
   return (
-    <div className='home'>
-    <NavBar/>
-    {isHoveredOver && <TextAnimation />}
-    <div
-        onMouseEnter={() => setIsHoveredOver(true)}
-        onMouseLeave={() => setIsHoveredOver(false)}
-    
-    >
-
-        <CircularLoader
-        onClick={()=>showInputBox()}
-        />
-
-        {/* only show if no results */}
-        <ComboBox options={options.movies}  setMovieRecs={setMovieRecs} setMovieId={setMovieId}/>
-
-        {/* <p>{}</p>
-        <Button/> */}
-        { movieRecs.length > 0 &&  <ResultRow title ={"Recommendations:"} movies={movieRecs}/>}
-        {!userMoviesLoading && <ResultRow title={"My List"} movies={userMoviesData}/>}
-        
-        </div>
-    
-    </div>
-  );
   
+  <div className='home'>
+  <NavBar/>
+  {loadingOptions ? (
+      <div className="home__initial__state">
+          
+          <div>
+          <MainLoader /> 
+          {/* Render userMovies  */}
+          {!userMoviesLoading && <ResultRow title={"My List"} movies={userMoviesData}/>}
+          </div>
+      </div>
+  ) : (
+      <>
+          {isHoveredOver && <TextAnimation />}
+          <div  className="home"
+              onMouseEnter={() => setIsHoveredOver(true)}
+              onMouseLeave={() => setIsHoveredOver(false)}
+          >
+              <CircularLoader onClick={()=>showInputBox()}/>
+              {/* dropdown component */}
+              <ComboBox options={options.movies} setMovieRecs={setMovieRecs} setMovieId={setMovieId}/>
+              {movieRecs.length > 0 && <ResultRow title={"Recommendations:"} movies={movieRecs}/>}
+              {!userMoviesLoading && <ResultRow title={"My List"} movies={userMoviesData}/>}
+          </div>
+      </>
+  )}
+</div>
+  
+  );
 }
 
 export default Home

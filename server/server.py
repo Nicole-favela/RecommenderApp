@@ -17,14 +17,18 @@ from flask_bcrypt import Bcrypt
 import json
 import boto3
 from botocore.exceptions import ConnectionError
+from flask_caching import Cache
 
 
 load_dotenv()
 
 app = Flask(__name__)
+
 bcrypt = Bcrypt(app) 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
+app.config['CACHE_TYPE'] = 'simple'  
+cache = Cache(app)
 jwt = JWTManager(app)
 db.init_app(app)
 migrate = Migrate(app, db) #to keep track of changes to schemas
@@ -126,7 +130,57 @@ def get_movie_options(movies):
     except Exception as e:
         return jsonify({'error': str(e)})
     
-
+@cache.memoize(timeout=3600)  # Caches data for one hour
+def get_content_tags():
+    config_env_path = os.path.join(os.path.dirname(__file__), '..', 'config', '.env')
+    load_dotenv(dotenv_path=config_env_path)
+    
+   
+    s3= boto3.client('s3')
+    max_retries = 3
+    retry_count = 0
+    
+    AWS_BUCKET_NAME=os.getenv('AWS_BUCKET_NAME')
+    while retry_count < max_retries:
+        try:
+            response2 = s3.get_object(Bucket=AWS_BUCKET_NAME, Key='simplified_movies_data.pkl')
+         
+            content_tags = pickle.loads(response2['Body'].read())
+          
+            print('fetched data, response2 is: ', response2)
+            return content_tags
+            
+        except:
+            retry_count+=1
+           
+            if retry_count == max_retries:
+                print('Max retries exceeded. Failed to retrieve objects from s3')
+                
+@cache.memoize(timeout=3600)  # Caches data for one hour
+def get_similarities():
+    config_env_path = os.path.join(os.path.dirname(__file__), '..', 'config', '.env')
+    load_dotenv(dotenv_path=config_env_path)
+    
+   
+    s3= boto3.client('s3')
+    max_retries = 3
+    retry_count = 0
+    
+    AWS_BUCKET_NAME=os.getenv('AWS_BUCKET_NAME')
+    while retry_count < max_retries:
+        try:
+        
+            response1 = s3.get_object(Bucket=AWS_BUCKET_NAME, Key='similarities.pkl')
+            similarities = pickle.loads(response1['Body'].read())
+            print('fetched data, response2 is: ', response1)
+            return similarities
+           
+        except:
+            retry_count+=1
+           
+            if retry_count == max_retries:
+                print('Max retries exceeded. Failed to retrieve objects from s3')
+                
 def recommendations(title, content_tags, sim):
     index_of_movie = content_tags[content_tags['title'] == title].index[0]
     similar_to = sorted(list(enumerate(sim[index_of_movie])),reverse=True, key=lambda vector: vector[1]) #sorted tuple list of index, similarity score
@@ -143,35 +197,10 @@ def recommendations(title, content_tags, sim):
 @app.route("/", methods = ['GET','POST'])
 @jwt_required()
 def index():
-    config_env_path = os.path.join(os.path.dirname(__file__), '..', 'config', '.env')
-    load_dotenv(dotenv_path=config_env_path)
-    
+    content_tags = get_content_tags()
    
-    s3= boto3.client('s3')
-    max_retries = 3
-    retry_count = 0
-    
-    AWS_BUCKET_NAME=os.getenv('AWS_BUCKET_NAME')
-    while retry_count < max_retries:
-        try:
-        
-            response1 = s3.get_object(Bucket=AWS_BUCKET_NAME, Key='similarities.pkl')
-            response2 = s3.get_object(Bucket=AWS_BUCKET_NAME, Key='simplified_movies_data.pkl')
-            similarities = pickle.loads(response1['Body'].read())
-            content_tags = pickle.loads(response2['Body'].read())
-            print('fetched data, response1 is: ', response1)
-            print('fetched data, response2 is: ', response2)
-            break #success- break out of loop
-        except:
-            retry_count+=1
-           
-            if retry_count == max_retries:
-                print('Max retries exceeded. Failed to retrieve objects from s3')
-                
-
-    # content_tags = pickle.load(open('./pickle_files/simplified_movies_data.pkl', 'rb'))
-    # similarities = pickle.load(open('./pickle_files/similarities.pkl', 'rb'))
     if request.method =='POST': #add title user selected
+        similarities=get_similarities()
         title = request.json['title']['label']
         recs, rec_ids = recommendations(title, content_tags, similarities)
         unique_movies = set()
@@ -191,7 +220,7 @@ def index():
                     "crew": json.dumps(get_movie_crew(int(id)))
                 })
         
-        #print(f"The recommendations are: {movie_recommendations}")
+       
         return jsonify({'recomendations': movie_recommendations})
        
     else:# get movie options for user to choose from

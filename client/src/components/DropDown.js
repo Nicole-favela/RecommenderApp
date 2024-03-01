@@ -16,35 +16,47 @@ const darkTheme = createTheme({
 
 export default function ComboBox({options, setMovieRecs, setMovieId}) {
    const [form, setForm] = useState({})
+   const [isLoading, setIsLoading] = useState(false)
    const navigate = useNavigate()
    async function handleSubmit(e){
         e.preventDefault() //prevent default submission of form
+        setIsLoading(true);
         const token = Cookies.get('token')
-       
-        const res = await fetch(`${BASE_URL}/`, {
-            method:"POST", 
-            body: JSON.stringify(form),
-            headers:{
-              'content-type': "application/json", 
-              Authorization: `Bearer ${token}`,
-             
-            }
-          }); 
-        const data = await res.json(); //get recommendations array back
-        if(!res.ok){
-          console.log('error in dropdown when submitting movie selection: ', res)
-        }
-        if (res.ok){
-          
-            const parsedRecommendations = data.recomendations.map((recommendation) => ({
-            ...recommendation,
-            crew: JSON.parse(recommendation.crew),
-            cast: JSON.parse(recommendation.cast),
-            }));
+        try{
+          const res = await fetch(`${BASE_URL}/`, {
+              method:"POST", 
+              body: JSON.stringify(form),
+              headers:{
+                'content-type': "application/json", 
+                Authorization: `Bearer ${token}`,
+              
+              }
+            }); 
+          const data = await res.json(); //get recommendations array back
+          if(!res.ok){
+            console.log('error in dropdown when submitting movie selection: ', res)
+          }
+          if (!res.ok) {
+            throw new Error('Failed to fetch recommendations');
+          }
+          if (res.ok){
             
-            setMovieRecs(parsedRecommendations)
-            console.log('the recommendations are: ',parsedRecommendations)
-        }
+              const parsedRecommendations = data.recomendations.map((recommendation) => ({
+              ...recommendation,
+              crew: JSON.parse(recommendation.crew),
+              cast: JSON.parse(recommendation.cast),
+              }));
+              
+              setMovieRecs(parsedRecommendations)
+              console.log('the recommendations are: ',parsedRecommendations)
+          }
+      }catch(e){
+        console.error('error in getting recommendations in dropdown', e)
+
+      }finally{
+        setIsLoading(false); 
+
+      }
   
       }
       
@@ -71,6 +83,13 @@ export default function ComboBox({options, setMovieRecs, setMovieId}) {
        
             <button className='glitch__btn' type= "submit">Generate</button>
         </Box>
+        </div>
+        <div class="loader">
+        <div class="scanner">
+          {isLoading && (
+            <span>Loading Results...</span>
+          )}
+          </div>
         </div>
     </ThemeProvider>
   );
