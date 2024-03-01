@@ -3,7 +3,7 @@
     font-weight: 1500;
     text-shadow: #000;
     padding-bottom: .3rem;
-    color:#fff;
+    color:#000000;
 
 }
 .banner__description{
@@ -13,11 +13,11 @@
     font-size:  0.8rem;
     max-width: 350px;
     height: 60px;
-    color:#fff;
+    color:#000000;
 
 }
 .banner__details{
-    color:#fff;
+    color:#000000;
     padding-top: 50px;
     
 }

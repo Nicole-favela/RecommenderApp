@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import Box from '@mui/material/Box';
+import {useNavigate} from 'react-router-dom'
 
 import Modal from '@mui/material/Modal';
 import './DetailsModal.css'
@@ -9,6 +10,7 @@ import { BASE_URL } from '../config/urls';
 import {jwtDecode} from 'jwt-decode'
    
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+
 
 const style = {
     position: 'absolute',
@@ -26,8 +28,9 @@ const style = {
 function DetailsModal({open, handleClose, movie}) {
   const moviePoster = `url("https://image.tmdb.org/t/p/original/${movie?.poster_path}")`
   const [on_my_list, set_on_my_list]= useState(false)//temp state, replace with db value
-  const [creditsLoading, creditsSetLoading]= useState(false)
+  const token = Cookies.get('token')
   const [like, setLike] = useState(false)
+  const navigate = useNavigate()
   function truncateDescription(string, cutoffChar){
       return string?.length > cutoffChar ? string.substr(0, cutoffChar -1) + '...' : string;
    }
@@ -54,7 +57,8 @@ function DetailsModal({open, handleClose, movie}) {
     return (movie !== undefined && 'user_id' in movie) ? true : false
   }
   async function deleteMovie(id){ 
-    const token = Cookies.get('token')
+    
+   
     const res = await fetch(`${BASE_URL}/delete_movie/${id}`, {
         method:"DELETE", 
         headers:{
@@ -62,6 +66,11 @@ function DetailsModal({open, handleClose, movie}) {
           Authorization: `Bearer ${token}`,
         }
       });
+      if(res.status == 401){//redirect to login page
+        navigate("/login")
+        Cookies.remove('token')
+        
+      }
     
       if (!res.ok){
         const errorData = await res.json();
@@ -73,7 +82,7 @@ function DetailsModal({open, handleClose, movie}) {
   }
    
    async function addMovie(movie){
-    const token = Cookies.get('token')
+   
     const decoded = jwtDecode(token)
     const user_id = decoded.sub
     
@@ -103,6 +112,11 @@ function DetailsModal({open, handleClose, movie}) {
            Authorization: `Bearer ${token}`,
         }
       });
+      if(res.status == 401){
+        navigate("/login")
+        Cookies.remove('token')
+        
+      }
     
       if (!res.ok){
         const errorData = await res.json();
