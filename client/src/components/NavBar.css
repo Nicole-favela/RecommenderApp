@@ -5,14 +5,14 @@
     left: 0;
     width: 100%;
     height: 30px;
-    z-index: 1;
+    z-index: 10;
    
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0 20px; 
-    transition-timing-function: ease-in;
-    transition: all .5s;
+    /* transition-timing-function: ease-in;
+    transition: all .5s; */
   }
   
   .navbar__contents {
@@ -20,16 +20,23 @@
     align-items: center;
     cursor: pointer;
     color: white;
+    
   }
   .navbar__black {
     background-color: #111;
   }
   
   .navbar__contents h2 {
-    color: white;
+    color: rgb(212, 236, 247);
     margin: 0;
+    font-size: 22px; 
+    font-weight: 550; 
     padding-right: 20px; 
+    padding-top: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4); /* Subtle shadow */
+    position: absolute;
   }
+  
   
   .logout {
     padding-top: 6px;

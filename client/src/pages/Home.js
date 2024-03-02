@@ -1,6 +1,6 @@
 import React from 'react'
 import CircularLoader from '../components/CircularLoader'
-import TextAnimation from '../components/TextAnimation'
+
 import { useState, useEffect } from 'react'
 import NavBar from '../components/NavBar'
 import axios from 'axios'
@@ -82,7 +82,7 @@ function Home() {
       </div>
   ) : (
       <>
-          {isHoveredOver && <TextAnimation />}
+          {/* {isHoveredOver && <TextAnimation />} */}
           <div  className="home"
               onMouseEnter={() => setIsHoveredOver(true)}
               onMouseLeave={() => setIsHoveredOver(false)}
