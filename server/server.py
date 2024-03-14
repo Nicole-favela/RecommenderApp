@@ -11,7 +11,8 @@ import pickle
 import pandas as pd
 import os
 from os import path
-from config.generate_key import JWT_SECRET_KEY
+
+# from config.generate_key import JWT_SECRET_KEY
 import pip._vendor.requests
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import distinct
@@ -32,7 +33,7 @@ app = Flask(__name__)
 bcrypt = Bcrypt(app)
 # old url: 'sqlite:///database.db'
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-app.config["JWT_SECRET_KEY"] = JWT_SECRET_KEY
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["CACHE_TYPE"] = "simple"
 cache = Cache(app)
 jwt = JWTManager(app)
