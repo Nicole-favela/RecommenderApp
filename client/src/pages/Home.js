@@ -120,7 +120,7 @@ function Home() {
           <div>
             <MainLoader />
             {/* Render userMovies  */}
-            {!userMoviesLoading && <ResultRow title={"My List"} movies={userMoviesData} />}
+            {!userMoviesLoading && <ResultRow title={"My List"} movies={userMoviesData} fetchUserList={fetchUserList} />}
           </div>
         </div>
       ) : (
@@ -133,8 +133,8 @@ function Home() {
             <CircularLoader onClick={() => showInputBox()} />
             {/* dropdown component */}
             <ComboBox options={options.movies} setMovieRecs={setMovieRecs} setMovieId={setMovieId} />
-            {movieRecs.length > 0 && <ResultRow title={"Recommendations:"} movies={movieRecs} />}
-            {!userMoviesLoading && <ResultRow title={"My List"} movies={userMoviesData} />}
+            {movieRecs.length > 0 && <ResultRow title={"Recommendations:"} movies={movieRecs} fetchUserList={fetchUserList} />}
+            {!userMoviesLoading && <ResultRow title={"My List"} movies={userMoviesData} fetchUserList={fetchUserList} />}
           </div>
         </>
       )}
