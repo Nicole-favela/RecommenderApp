@@ -11,7 +11,6 @@ import pickle
 import pandas as pd
 import os
 from os import path
-
 # from config.generate_key import JWT_SECRET_KEY
 import pip._vendor.requests
 from flask_sqlalchemy import SQLAlchemy
@@ -31,7 +30,7 @@ load_dotenv()
 app = Flask(__name__)
 
 bcrypt = Bcrypt(app)
-# old url: 'sqlite:///database.db'
+
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.config["CACHE_TYPE"] = "simple"
@@ -39,7 +38,7 @@ cache = Cache(app)
 jwt = JWTManager(app)
 db.init_app(app)
 migrate = Migrate(app, db)  # to keep track of changes to schemas
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://movierecommender-5hmu.onrender.com"}})
 
 # with app.app_context():
 #     create_database()
@@ -173,7 +172,7 @@ def get_content_tags():
 
             content_tags = pickle.loads(response2["Body"].read())
 
-            print("fetched data, response2 is: ", response2)
+            #print("fetched data, response2 is: ", response2)
             return content_tags
 
         except:
@@ -198,7 +197,7 @@ def get_similarities():
 
             response1 = s3.get_object(Bucket=AWS_BUCKET_NAME, Key="similarities.pkl")
             similarities = pickle.loads(response1["Body"].read())
-            print("fetched data, response2 is: ", response1)
+            #print("fetched data, response2 is: ", response1)
             return similarities
 
         except:
