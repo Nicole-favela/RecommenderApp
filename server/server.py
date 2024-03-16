@@ -11,6 +11,7 @@ import pickle
 import pandas as pd
 import os
 from os import path
+
 # from config.generate_key import JWT_SECRET_KEY
 import pip._vendor.requests
 from flask_sqlalchemy import SQLAlchemy
@@ -172,7 +173,7 @@ def get_content_tags():
 
             content_tags = pickle.loads(response2["Body"].read())
 
-            #print("fetched data, response2 is: ", response2)
+            # print("fetched data, response2 is: ", response2)
             return content_tags
 
         except:
@@ -197,7 +198,7 @@ def get_similarities():
 
             response1 = s3.get_object(Bucket=AWS_BUCKET_NAME, Key="similarities.pkl")
             similarities = pickle.loads(response1["Body"].read())
-            #print("fetched data, response2 is: ", response1)
+            # print("fetched data, response2 is: ", response1)
             return similarities
 
         except:
@@ -229,29 +230,34 @@ def index():
     content_tags = get_content_tags()
 
     if request.method == "POST":  # add title user selected
-        similarities = get_similarities()
-        title = request.json["title"]["label"]
-        recs, rec_ids = recommendations(title, content_tags, similarities)
-        unique_movies = set()
-        movie_recommendations = []
+        try:
+            similarities = get_similarities()
+            title = request.json["title"]["label"]
+            recs, rec_ids = recommendations(title, content_tags, similarities)
+            unique_movies = set()
+            movie_recommendations = []
 
-        for movie, id in zip(recs, rec_ids):
-            # Check if the movie_id is already in the set
-            if id not in unique_movies:
-                unique_movies.add(id)
-                movie_recommendations.append(
-                    {
-                        "title": movie,
-                        "id": id,
-                        "poster_path": get_poster(int(id)),
-                        "overview": get_overview(int(id)),
-                        "date": get_date(int(id)),
-                        "cast": json.dumps(get_movie_cast(int(id))),  # converts to JSON
-                        "crew": json.dumps(get_movie_crew(int(id))),
-                    }
-                )
+            for movie, id in zip(recs, rec_ids):
+                # Check if the movie_id is already in the set
+                if id not in unique_movies:
+                    unique_movies.add(id)
+                    movie_recommendations.append(
+                        {
+                            "title": movie,
+                            "id": id,
+                            "poster_path": get_poster(int(id)),
+                            "overview": get_overview(int(id)),
+                            "date": get_date(int(id)),
+                            "cast": json.dumps(
+                                get_movie_cast(int(id))
+                            ),  # converts to JSON
+                            "crew": json.dumps(get_movie_crew(int(id))),
+                        }
+                    )
 
-        return jsonify({"recomendations": movie_recommendations})
+            return jsonify({"recomendations": movie_recommendations}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)})
 
     else:  # get movie options for user to choose from
 
