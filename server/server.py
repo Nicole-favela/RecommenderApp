@@ -11,7 +11,6 @@ import pickle
 import pandas as pd
 import os
 from os import path
-import sys
 
 # from config.generate_key import JWT_SECRET_KEY
 import pip._vendor.requests
@@ -191,7 +190,10 @@ def get_content_tags():
             retry_count += 1
 
             if retry_count == max_retries:
-                print("Max retries exceeded. Failed to retrieve objects from s3")
+                print(
+                    "Max retries exceeded. Failed to retrieve objects from s3",
+                    flush=True,
+                )
 
 
 @cache.memoize(timeout=3600)  # Caches data for one hour
@@ -209,14 +211,21 @@ def get_similarities():
 
             response1 = s3.get_object(Bucket=AWS_BUCKET_NAME, Key="similarities.pkl")
             similarities = pickle.loads(response1["Body"].read())
-            print("fetched data from s3, the similarities data is: ", response1)
+            print(
+                "fetched data from s3, the similarities data is: ",
+                response1,
+                flush=True,
+            )
             return similarities
 
         except:
             retry_count += 1
 
             if retry_count == max_retries:
-                print("Max retries exceeded. Failed to retrieve objects from s3")
+                print(
+                    "Max retries exceeded. Failed to retrieve objects from s3",
+                    flush=True,
+                )
 
 
 def recommendations(title, content_tags, sim):
@@ -244,9 +253,9 @@ def index():
         try:
             similarities = get_similarities()
             title = request.json["title"]["label"]
-            sys.stdout.write("the title is: " + title)
+            print("in / route, the title selected was: ", title, flush=True)
             recs, rec_ids = recommendations(title, content_tags, similarities)
-            sys.stdout.write("In home route, recommendations are: " + recs)
+            print("in / route: recommendations are: ", recs, flush=True)
             unique_movies = set()
             movie_recommendations = []
 
@@ -270,7 +279,7 @@ def index():
 
             return jsonify({"recomendations": movie_recommendations}), 200
         except Exception as e:
-            sys.stdout.write("error occurred in getting recommendations: " + e)
+            print("error occurred in trying to return recommendations: ", e, flush=True)
             return jsonify({"error": str(e)}), 500
 
     else:  # get movie options for user to choose from
