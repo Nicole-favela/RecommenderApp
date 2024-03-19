@@ -39,7 +39,17 @@ cache = Cache(app)
 jwt = JWTManager(app)
 db.init_app(app)
 migrate = Migrate(app, db)  # to keep track of changes to schemas
-CORS(app, resources={r"/*": {"origins": "https://movierecommender-5hmu.onrender.com"}})
+CORS(
+    app,
+    resources={
+        r"/*": {
+            "origins": [
+                "https://movierecommender-5hmu.onrender.com",
+                "http://localhost:3000",
+            ]
+        }
+    },
+)
 
 # with app.app_context():
 #     create_database()
@@ -198,7 +208,7 @@ def get_similarities():
 
             response1 = s3.get_object(Bucket=AWS_BUCKET_NAME, Key="similarities.pkl")
             similarities = pickle.loads(response1["Body"].read())
-            # print("fetched data, response2 is: ", response1)
+            print("fetched data from s3, the similarities data is: ", response1)
             return similarities
 
         except:
@@ -233,7 +243,9 @@ def index():
         try:
             similarities = get_similarities()
             title = request.json["title"]["label"]
+            print("in / route, the title selected was: ", title)
             recs, rec_ids = recommendations(title, content_tags, similarities)
+            print("in / route: recommendations are: ", recs)
             unique_movies = set()
             movie_recommendations = []
 
@@ -257,6 +269,7 @@ def index():
 
             return jsonify({"recomendations": movie_recommendations}), 200
         except Exception as e:
+            print("error occurred in trying to return recommendations: ", e)
             return jsonify({"error": str(e)})
 
     else:  # get movie options for user to choose from
