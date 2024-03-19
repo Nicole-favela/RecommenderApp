@@ -270,7 +270,7 @@ def index():
             return jsonify({"recomendations": movie_recommendations}), 200
         except Exception as e:
             print("error occurred in trying to return recommendations: ", e)
-            return jsonify({"error": str(e)})
+            return jsonify({"error": str(e)}), 500
 
     else:  # get movie options for user to choose from
 
