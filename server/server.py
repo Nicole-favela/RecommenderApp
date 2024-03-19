@@ -11,6 +11,7 @@ import pickle
 import pandas as pd
 import os
 from os import path
+import sys
 
 # from config.generate_key import JWT_SECRET_KEY
 import pip._vendor.requests
@@ -243,9 +244,9 @@ def index():
         try:
             similarities = get_similarities()
             title = request.json["title"]["label"]
-            print("in / route, the title selected was: ", title)
+            sys.stdout.write("the title is: " + title)
             recs, rec_ids = recommendations(title, content_tags, similarities)
-            print("in / route: recommendations are: ", recs)
+            sys.stdout.write("In home route, recommendations are: " + recs)
             unique_movies = set()
             movie_recommendations = []
 
@@ -269,7 +270,7 @@ def index():
 
             return jsonify({"recomendations": movie_recommendations}), 200
         except Exception as e:
-            print("error occurred in trying to return recommendations: ", e)
+            sys.stdout.write("error occurred in getting recommendations: " + e)
             return jsonify({"error": str(e)}), 500
 
     else:  # get movie options for user to choose from
