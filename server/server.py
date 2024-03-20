@@ -105,7 +105,7 @@ def add_to_list():
         else:
             return jsonify({"message": "Movie already exists"}), 200
     except Exception as e:
-        print(f"Error adding user movies: {e}")
+        print(f"Error adding user movies: {e}", flush=True)
         return jsonify({"error": str(e)}), 500
 
 
@@ -143,7 +143,7 @@ def get_user_list():
         # print(f"Current movies in get_user_list: {movies}")
         return jsonify({"movies_list": movies}), 200
     except Exception as e:
-        print(f"Error fetching user movies: {e}")
+        print(f"Error fetching user movies: {e}", flush=True)
         return jsonify({"error": str(e)}), 500
 
 
