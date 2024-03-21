@@ -165,7 +165,7 @@ def get_movie_options(movies):
         return jsonify({"error": str(e)})
 
 
-@cache.memoize(timeout=3600)  # Caches data for one hour
+@cache.memoize(timeout=1800)  # Caches data for one hour
 def get_content_tags():
     config_env_path = os.path.join(os.path.dirname(__file__), "..", "config", ".env")
     load_dotenv(dotenv_path=config_env_path)
@@ -196,7 +196,7 @@ def get_content_tags():
                 )
 
 
-@cache.memoize(timeout=3600)  # Caches data for one hour
+@cache.memoize(timeout=1800)  # Caches data for one hour
 def get_similarities():
     config_env_path = os.path.join(os.path.dirname(__file__), "..", "config", ".env")
     load_dotenv(dotenv_path=config_env_path)
