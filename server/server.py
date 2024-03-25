@@ -239,7 +239,6 @@ def recommendations(title, content_tags, sim):
         # print(content_tags.iloc[s[0]].title) #print the title at location s[0]- index in tuple list
         recommendations.append(content_tags.iloc[s[0]].title)
         rec_ids.append(str(content_tags.iloc[s[0]].id))
-    # print('recommendations, recs are: ',recommendations, 'with ids: ', rec_ids)
 
     return recommendations, rec_ids
 
@@ -263,17 +262,17 @@ def index():
                 # Check if the movie_id is already in the set
                 if id not in unique_movies:
                     unique_movies.add(id)
+                    cast, crew = get_movie_cast_and_crew(int(id))
+                    overview, poster, date = get_movie_details(int(id))
                     movie_recommendations.append(
                         {
                             "title": movie,
                             "id": id,
-                            "poster_path": get_poster(int(id)),
-                            "overview": get_overview(int(id)),
-                            "date": get_date(int(id)),
-                            "cast": json.dumps(
-                                get_movie_cast(int(id))
-                            ),  # converts to JSON
-                            "crew": json.dumps(get_movie_crew(int(id))),
+                            "poster_path": poster,
+                            "overview": overview,
+                            "date": date,
+                            "cast": json.dumps(cast),  # converts to JSON
+                            "crew": json.dumps(crew),
                         }
                     )
 
@@ -288,21 +287,7 @@ def index():
         return movie_options
 
 
-def get_poster(id):
-    # use movie_id to build url
-    API_KEY = os.getenv("API_KEY")
-    if API_KEY is None:
-        return jsonify({"error": "api key is not set"}), 500
-    URL = f"https://api.themoviedb.org/3/movie/{id}?api_key={API_KEY}"
-
-    response = requests.get(URL)
-    data = response.json()
-    poster_path = data["backdrop_path"]
-
-    return poster_path
-
-
-def get_movie_cast(id):
+def get_movie_cast_and_crew(id):
     # use movie_id to build url
     API_KEY = os.getenv("API_KEY")
     if API_KEY is None:
@@ -312,23 +297,11 @@ def get_movie_cast(id):
     response = requests.get(URL)
     data = response.json()
     cast = data["cast"]
-    return cast[:5]
-
-
-def get_movie_crew(id):
-    # use movie_id to build url
-    API_KEY = os.getenv("API_KEY")
-    if API_KEY is None:
-        return jsonify({"error": "api key is not set"}), 500
-    URL = f"https://api.themoviedb.org/3/movie/{id}/credits?api_key={API_KEY}"
-
-    response = requests.get(URL)
-    data = response.json()
     crew = data["crew"]
-    return crew[:5]
+    return cast[:5], crew[:5]
 
 
-def get_overview(id):
+def get_movie_details(id):
     API_KEY = os.getenv("API_KEY")
     if API_KEY is None:
         return jsonify({"error": "api key is not set"}), 500
@@ -336,20 +309,9 @@ def get_overview(id):
     response = requests.get(URL)
     data = response.json()
     overview = data["overview"]
-    return overview
-
-
-def get_date(id):
-    API_KEY = os.getenv("API_KEY")
-    if API_KEY is None:
-        return jsonify({"error": "api key is not set"}), 500
-    URL = f"https://api.themoviedb.org/3/movie/{id}?api_key={API_KEY}"
-    response = requests.get(URL)
-    data = response.json()
-
+    poster_path = data["backdrop_path"]
     date = data["release_date"]
-
-    return date
+    return overview, poster_path, date
 
 
 @app.route("/sign_up", methods=["POST"])
